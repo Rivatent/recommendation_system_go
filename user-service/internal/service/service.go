@@ -1,25 +1,19 @@
 package service
 
-import (
-	"database/sql"
-	"log"
-	"os"
-)
+type IRepo interface {
+	GetUsersRepo()
+}
 
-func ConnectDB() (*sql.DB, error) {
-	dsn := os.Getenv("DATABASE_URL")
-	db, err := sql.Open("postgres", dsn)
-	if err != nil {
-		log.Printf("========= Connection to database error: %v =========", err)
-		return nil, err
-	}
-	//defer db.Close()
+type Service struct {
+	repo IRepo
+}
 
-	if err := db.Ping(); err != nil {
-		log.Printf("========= Ping to database error: %v =========", err)
-		return nil, err
+func New(repo IRepo) *Service {
+	return &Service{
+		repo: repo,
 	}
-	log.Println("========= Connected to database via ping =========")
-	//createTable(db)
-	return db, nil
+}
+
+func (s *Service) GetUsers() {
+	s.repo.GetUsersRepo()
 }
