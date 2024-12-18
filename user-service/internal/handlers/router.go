@@ -15,7 +15,7 @@ func newRouter(l log.Factory, svc *service.Service) *gin.Engine {
 		gin.Logger(),
 		cors.New(cors.Config{
 			AllowAllOrigins: true,
-			AllowMethods:    []string{"POST", "GET", "PUT", "DELETE"},
+			AllowMethods:    []string{"POST", "GET", "PATCH", "DELETE"},
 		}),
 	)
 
@@ -33,7 +33,7 @@ func AddHandlers(router *gin.Engine, l log.Factory, svc *service.Service) {
 		{
 			userSvc.GET("", handlers.GetUsers)
 			userSvc.POST("", handlers.CreateUser)
-			userSvc.PUT("", handlers.UpdateUser)
+			userSvc.PATCH("", handlers.UpdateUser)
 			userSvc.GET("/:id", handlers.GetUserByID)
 			//DELETE?
 		}
