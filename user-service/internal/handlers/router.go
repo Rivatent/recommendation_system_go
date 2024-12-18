@@ -4,9 +4,10 @@ import (
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"user-service/internal/service"
+	"user-service/log"
 )
 
-func newRouter(svc *service.Service) *gin.Engine {
+func newRouter(l log.Factory, svc *service.Service) *gin.Engine {
 	router := gin.New()
 
 	router.Use(
@@ -18,13 +19,13 @@ func newRouter(svc *service.Service) *gin.Engine {
 		}),
 	)
 
-	AddHandlers(router, svc)
+	AddHandlers(router, l, svc)
 
 	return router
 }
 
-func AddHandlers(router *gin.Engine, svc *service.Service) {
-	handlers := New(svc)
+func AddHandlers(router *gin.Engine, l log.Factory, svc *service.Service) {
+	handlers := New(l, svc)
 
 	app := router.Group("/api/v1")
 	{
