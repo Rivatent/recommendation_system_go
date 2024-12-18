@@ -13,13 +13,11 @@ type Repo struct {
 
 func New() *Repo {
 	dsn := os.Getenv("DATABASE_URL")
-
 	db, err := sql.Open("postgres", dsn)
 	if err != nil {
 		log.Printf("========= Connection to database error: %v =========", err)
 		return nil
 	}
-
 	if err = db.Ping(); err != nil {
 		log.Printf("========= Ping to database error: %v =========", err)
 		return nil

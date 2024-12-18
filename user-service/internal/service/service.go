@@ -1,7 +1,12 @@
 package service
 
+import "user-service/internal/repository"
+
 type IRepo interface {
-	GetUsersRepo()
+	GetUsersRepo() ([]repository.User, error)
+	CreateUserRepo(user repository.User) (repository.User, error)
+	UpdateUserRepo(user repository.User) (repository.User, error)
+	GetUserByIDRepo(id int) (repository.User, error)
 }
 
 type Service struct {
@@ -14,6 +19,32 @@ func New(repo IRepo) *Service {
 	}
 }
 
-func (s *Service) GetUsers() {
-	s.repo.GetUsersRepo()
+func (s *Service) GetUsers() ([]repository.User, error) {
+	return s.repo.GetUsersRepo()
+}
+
+func (s *Service) CreateUser(user repository.User) (repository.User, error) {
+	createdUser, err := s.repo.CreateUserRepo(user)
+	if err != nil {
+		return repository.User{}, err
+	}
+
+	return createdUser, nil
+}
+
+func (s *Service) UpdateUser(user repository.User) (repository.User, error) {
+	updatedUser, err := s.repo.UpdateUserRepo(user)
+	if err != nil {
+		return repository.User{}, err
+	}
+
+	return updatedUser, nil
+}
+
+func (s *Service) GetUserByID(id int) (repository.User, error) {
+	user, err := s.repo.GetUserByIDRepo(id)
+	if err != nil {
+		return repository.User{}, err
+	}
+	return user, nil
 }
