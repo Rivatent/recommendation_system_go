@@ -3,6 +3,7 @@ package app
 import (
 	"context"
 	"errors"
+	"go.uber.org/zap"
 	"net/http"
 	"os"
 	"os/signal"
@@ -11,6 +12,7 @@ import (
 	"user-service/internal/handlers"
 	"user-service/internal/repository"
 	"user-service/internal/service"
+	"user-service/log"
 )
 
 type IRunner interface {
@@ -23,12 +25,16 @@ type App struct {
 }
 
 func New() (*App, error) {
+	l := log.InitLogger().With(zap.String("app", "user-service"))
+
+	appLogger := log.NewFactory(l)
+
 	db := repository.New()
 	closer.Add(db.Close)
 
 	svc := service.New(db)
 
-	httpSrv := handlers.NewServer(svc)
+	httpSrv := handlers.NewServer(appLogger, svc)
 
 	return &App{
 		serverHttp: httpSrv,
