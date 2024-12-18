@@ -4,16 +4,15 @@ import (
 	"github.com/gin-gonic/gin"
 	"go.uber.org/zap"
 	"net/http"
-	"strconv"
-	"user-service/internal/repository"
+	"user-service/internal/model"
 	"user-service/log"
 )
 
 type IUserService interface {
-	GetUsers() ([]repository.User, error)
-	CreateUser(user repository.User) (repository.User, error)
-	UpdateUser(user repository.User) (repository.User, error)
-	GetUserByID(id int) (repository.User, error)
+	GetUsers() ([]model.User, error)
+	CreateUser(user model.User) (string, error)
+	UpdateUser(user model.User) (model.User, error)
+	GetUserByID(id string) (model.User, error)
 }
 
 type Handler struct {
@@ -30,7 +29,7 @@ func New(logger log.Factory, svc IUserService) *Handler {
 }
 
 func (h *Handler) UpdateUser(c *gin.Context) {
-	var user repository.User
+	var user model.User
 	if err := c.ShouldBindJSON(&user); err != nil {
 		h.logger.Bg().Error("failed UpdateUser", zap.Error(err))
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid input"})
@@ -58,29 +57,26 @@ func (h *Handler) GetUsers(c *gin.Context) {
 }
 
 func (h *Handler) CreateUser(c *gin.Context) {
-	var user repository.User
+	var user model.User
 	if err := c.ShouldBindJSON(&user); err != nil {
 		h.logger.Bg().Error("failed CreateUser", zap.Error(err))
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid input"})
 		return
 	}
 
-	createdUser, err := h.svc.CreateUser(user)
+	createdUserID, err := h.svc.CreateUser(user)
 	if err != nil {
 		h.logger.Bg().Error("failed CreateUser", zap.Error(err))
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 
-	c.JSON(http.StatusCreated, createdUser)
+	c.JSON(http.StatusCreated, createdUserID)
 }
 
 func (h *Handler) GetUserByID(c *gin.Context) {
-	idStr := c.Param("id")
-	id, err := strconv.Atoi(idStr)
-	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid user ID"})
-	}
+	id := c.Param("id")
+
 	user, err := h.svc.GetUserByID(id)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})

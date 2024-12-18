@@ -1,12 +1,14 @@
 package service
 
-import "user-service/internal/repository"
+import (
+	"user-service/internal/model"
+)
 
 type IRepo interface {
-	GetUsersRepo() ([]repository.User, error)
-	CreateUserRepo(user repository.User) (repository.User, error)
-	UpdateUserRepo(user repository.User) (repository.User, error)
-	GetUserByIDRepo(id int) (repository.User, error)
+	GetUsersRepo() ([]model.User, error)
+	CreateUserRepo(user model.User) (string, error)
+	UpdateUserRepo(user model.User) (model.User, error)
+	GetUserByIDRepo(id string) (model.User, error)
 }
 
 type Service struct {
@@ -19,32 +21,32 @@ func New(repo IRepo) *Service {
 	}
 }
 
-func (s *Service) GetUsers() ([]repository.User, error) {
+func (s *Service) GetUsers() ([]model.User, error) {
 	return s.repo.GetUsersRepo()
 }
 
-func (s *Service) CreateUser(user repository.User) (repository.User, error) {
-	createdUser, err := s.repo.CreateUserRepo(user)
+func (s *Service) CreateUser(user model.User) (string, error) {
+	createdUserID, err := s.repo.CreateUserRepo(user)
 	if err != nil {
-		return repository.User{}, err
+		return createdUserID, err
 	}
 
-	return createdUser, nil
+	return createdUserID, nil
 }
 
-func (s *Service) UpdateUser(user repository.User) (repository.User, error) {
+func (s *Service) UpdateUser(user model.User) (model.User, error) {
 	updatedUser, err := s.repo.UpdateUserRepo(user)
 	if err != nil {
-		return repository.User{}, err
+		return model.User{}, err
 	}
 
 	return updatedUser, nil
 }
 
-func (s *Service) GetUserByID(id int) (repository.User, error) {
+func (s *Service) GetUserByID(id string) (model.User, error) {
 	user, err := s.repo.GetUserByIDRepo(id)
 	if err != nil {
-		return repository.User{}, err
+		return model.User{}, err
 	}
 	return user, nil
 }

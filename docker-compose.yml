@@ -30,17 +30,17 @@ services:
        postgres:
          condition: service_healthy
 
-  product-service:
-    build:
-      context: ./product-service
-      dockerfile: Dockerfile
-    ports:
-      - "8082:8082"
-    env_file:
-      - ./product-service/.env
-    depends_on:
-      postgres:
-        condition: service_healthy
+#  product-service:
+#    build:
+#      context: ./product-service
+#      dockerfile: Dockerfile
+#    ports:
+#      - "8082:8082"
+#    env_file:
+#      - ./product-service/.env
+#    depends_on:
+#      postgres:
+#        condition: service_healthy
 
 #  redis:
 #    image: redis:latest
