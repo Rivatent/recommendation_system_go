@@ -5,10 +5,10 @@ STD_PATH=cmd/main.go
 
 all: user-service
 
-user-service:
+user-service: clean
 	 cd user-service/cmd/ && go build -o ../../bin/user-service
 
-product-service:
+product-service: clean
 	cd porduct-service/cmd/ && go build -o ../../bin/product-service
 
 clean:

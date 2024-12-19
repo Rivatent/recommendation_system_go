@@ -4,9 +4,10 @@ import (
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"product-service/internal/service"
+	"product-service/log"
 )
 
-func newRouter(svc *service.Service) *gin.Engine {
+func newRouter(l log.Factory, svc *service.Service) *gin.Engine {
 	router := gin.New()
 
 	router.Use(
@@ -14,26 +15,27 @@ func newRouter(svc *service.Service) *gin.Engine {
 		gin.Logger(),
 		cors.New(cors.Config{
 			AllowAllOrigins: true,
-			AllowMethods:    []string{"POST", "GET", "PUT", "DELETE"},
+			AllowMethods:    []string{"POST", "GET", "PATCH", "DELETE"},
 		}),
 	)
 
-	AddHandlers(router, svc)
+	AddHandlers(router, l, svc)
 
 	return router
 }
 
-func AddHandlers(router *gin.Engine, svc *service.Service) {
-	handlers := New(svc)
+func AddHandlers(router *gin.Engine, l log.Factory, svc *service.Service) {
+	handlers := New(l, svc)
 
 	app := router.Group("/api/v1")
 	{
-		userSvc := app.Group("/products")
+		ProductSvc := app.Group("/products")
 		{
-			userSvc.GET("", handlers.GetProducts)
-			//userSvc.POST("", handlers.AddProduct)
-			//userSvc.PUT("", handlers.UpdateProduct)
-			//userSvc.DELETE("/:id", handlers.DeleteProduct)
+			ProductSvc.GET("", handlers.GetProducts)
+			ProductSvc.POST("", handlers.CreateProduct)
+			ProductSvc.PATCH("", handlers.UpdateProduct)
+			ProductSvc.GET("/:id", handlers.GetProductByID)
+			ProductSvc.DELETE("/:id", handlers.DeleteProductByID)
 		}
 	}
 }
