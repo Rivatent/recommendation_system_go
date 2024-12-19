@@ -11,8 +11,6 @@ services:
       - ./init-scripts:/docker-entrypoint-initdb.d
     ports:
       - "5433:5432"
-    depends_on:
-      - kafka
     healthcheck:
       test: [ "CMD-SHELL", "pg_isready -U rivatent -d mydb" ]
       interval: 10s
@@ -27,6 +25,11 @@ services:
       ZOOKEEPER_TICK_TIME: 2000
     ports:
       - 22181:2181
+    healthcheck:
+      test: [ "CMD", "echo", "ruok" ]
+      interval: 10s
+      timeout: 5s
+      retries: 3
 
   kafka:
     image: confluentinc/cp-kafka:latest
@@ -42,6 +45,11 @@ services:
       KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT
       KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 2
+    healthcheck:
+      test: kafka-topics --bootstrap-server kafka:29092 --list
+      interval: 30s
+      timeout: 10s
+      retries: 3
 
   kafka-ui:
     image: provectuslabs/kafka-ui
@@ -68,10 +76,10 @@ services:
     depends_on:
       postgres:
          condition: service_healthy
-    links:
-      - kafka-ui
-
-
+      kafka:
+        condition: service_healthy
+      zookeeper:
+        condition: service_healthy
 
 #  product-service:
 #    build:
