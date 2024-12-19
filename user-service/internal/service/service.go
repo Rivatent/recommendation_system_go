@@ -12,12 +12,14 @@ type IRepo interface {
 }
 
 type Service struct {
-	repo IRepo
+	repo      IRepo
+	KafkaProd *KafkaProducer
 }
 
-func New(repo IRepo) *Service {
+func New(repo IRepo, kafkaProd *KafkaProducer) *Service {
 	return &Service{
-		repo: repo,
+		repo:      repo,
+		KafkaProd: kafkaProd,
 	}
 }
 
@@ -31,6 +33,15 @@ func (s *Service) CreateUser(user model.User) (string, error) {
 		return createdUserID, err
 	}
 
+	updateMsg := map[string]interface{}{
+		"event": "user_created",
+		"user":  user,
+		"id":    createdUserID,
+	}
+	if err := s.KafkaProd.SendMessage(updateMsg); err != nil {
+		return createdUserID, err
+	}
+
 	return createdUserID, nil
 }
 
@@ -38,6 +49,14 @@ func (s *Service) UpdateUser(user model.User) (model.User, error) {
 	updatedUser, err := s.repo.UpdateUserRepo(user)
 	if err != nil {
 		return model.User{}, err
+	}
+
+	updateMessage := map[string]interface{}{
+		"event": "user_updated",
+		"user":  updatedUser,
+	}
+	if err := s.KafkaProd.SendMessage(updateMessage); err != nil {
+		return updatedUser, err
 	}
 
 	return updatedUser, nil

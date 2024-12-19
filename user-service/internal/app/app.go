@@ -32,7 +32,13 @@ func New() (*App, error) {
 	db := repository.New()
 	closer.Add(db.Close)
 
-	svc := service.New(db)
+	kafkaProd, err := service.NewKafkaProducer("kafka:29092", "user_updates")
+	if err != nil {
+		return nil, err
+	}
+	closer.Add(kafkaProd.Close)
+
+	svc := service.New(db, kafkaProd)
 
 	httpSrv := handlers.NewServer(appLogger, svc)
 

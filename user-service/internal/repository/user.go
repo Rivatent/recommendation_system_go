@@ -48,28 +48,23 @@ func (r *Repo) CreateUserRepo(user model.User) (string, error) {
 }
 
 func (r *Repo) UpdateUserRepo(user model.User) (model.User, error) {
-	// Проверка обязательных полей
 	if user.Username == "" || user.Email == "" {
 		return model.User{}, errors.New("username and email are required")
 	}
 
-	// Подготовка SQL-запроса
 	var query string
 	if user.Password != "" {
-		// Хэшируем новый пароль, если он был предоставлен
 		hashedPassword, err := bcrypt.GenerateFromPassword([]byte(user.Password), bcrypt.DefaultCost)
 		if err != nil {
 			return model.User{}, errors.New("failed to hash password")
 		}
 
-		// Включаем поле для обновления пароля
 		query = `UPDATE users SET username = $1, email = $2, password = $3, updated_at = CURRENT_TIMESTAMP WHERE id = $4`
 		_, err = r.db.Exec(query, user.Username, user.Email, string(hashedPassword), user.ID)
 		if err != nil {
 			return model.User{}, err
 		}
 	} else {
-		// Обновляем только username и email, если пароль не изменился
 		query = `UPDATE users SET username = $1, email = $2, updated_at = CURRENT_TIMESTAMP WHERE id = $3`
 		_, err := r.db.Exec(query, user.Username, user.Email, user.ID)
 		if err != nil {
