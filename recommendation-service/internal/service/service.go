@@ -4,10 +4,8 @@ import "recommendation-service/internal/model"
 
 type IRepo interface {
 	GetRecommendationsRepo() ([]model.Recommendation, error)
-	//GetUsersRepo() ([]model.User, error)
-	//CreateUserRepo(user model.User) (string, error)
-	//UpdateUserRepo(user model.User) (model.User, error)
-	//GetUserByIDRepo(id string) (model.User, error)
+	GetRecommendationByIDRepo(id string) (model.Recommendation, error)
+	GetRecommendationsByUserIDRepo(id string) ([]model.Recommendation, error)
 }
 
 type Service struct {
@@ -24,49 +22,18 @@ func (s *Service) GetRecommendations() (recommendations []model.Recommendation, 
 	return s.repo.GetRecommendationsRepo()
 }
 
-//func (s *Service) GetUsers() ([]model.User, error) {
-//	return s.repo.GetUsersRepo()
-//}
-//
-//func (s *Service) CreateUser(user model.User) (string, error) {
-//	createdUserID, err := s.repo.CreateUserRepo(user)
-//	if err != nil {
-//		return createdUserID, err
-//	}
-//
-//	updateMsg := map[string]interface{}{
-//		"event": "user_created",
-//		"user":  user,
-//		"id":    createdUserID,
-//	}
-//	if err := s.KafkaProd.SendMessage(updateMsg); err != nil {
-//		return createdUserID, err
-//	}
-//
-//	return createdUserID, nil
-//}
-//
-//func (s *Service) UpdateUser(user model.User) (model.User, error) {
-//	updatedUser, err := s.repo.UpdateUserRepo(user)
-//	if err != nil {
-//		return model.User{}, err
-//	}
-//
-//	updateMessage := map[string]interface{}{
-//		"event": "user_updated",
-//		"user":  updatedUser,
-//	}
-//	if err := s.KafkaProd.SendMessage(updateMessage); err != nil {
-//		return updatedUser, err
-//	}
-//
-//	return updatedUser, nil
-//}
-//
-//func (s *Service) GetUserByID(id string) (model.User, error) {
-//	user, err := s.repo.GetUserByIDRepo(id)
-//	if err != nil {
-//		return model.User{}, err
-//	}
-//	return user, nil
-//}
+func (s *Service) GetRecommendationByID(id string) (model.Recommendation, error) {
+	recommendation, err := s.repo.GetRecommendationByIDRepo(id)
+	if err != nil {
+		return model.Recommendation{}, err
+	}
+	return recommendation, nil
+}
+
+func (s *Service) GetRecommendationsByUserID(id string) ([]model.Recommendation, error) {
+	recommendations, err := s.repo.GetRecommendationsByUserIDRepo(id)
+	if err != nil {
+		return nil, err
+	}
+	return recommendations, nil
+}

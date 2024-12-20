@@ -3,12 +3,14 @@ package repository
 import "recommendation-service/internal/model"
 
 func (r *Repo) GetRecommendationsRepo() ([]model.Recommendation, error) {
+	var recommendations []model.Recommendation
+
 	rows, err := r.db.Query("SELECT * FROM recommendations")
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
-	var recommendations []model.Recommendation
+
 	for rows.Next() {
 		var rec model.Recommendation
 		if err := rows.Scan(&rec.ID, &rec.UserID, &rec.ProductID, &rec.Score, &rec.CreatedAt, &rec.UpdatedAt); err != nil {
@@ -17,6 +19,49 @@ func (r *Repo) GetRecommendationsRepo() ([]model.Recommendation, error) {
 		recommendations = append(recommendations, rec)
 	}
 	return recommendations, nil
+}
+
+func (r *Repo) GetRecommendationByIDRepo(id string) (model.Recommendation, error) {
+	var rec model.Recommendation
+	row := r.db.QueryRow("SELECT * FROM recommendations WHERE id = $1", id)
+	if err := row.Scan(&rec.ID, &rec.UserID, &rec.ProductID, &rec.Score, &rec.CreatedAt, &rec.UpdatedAt); err != nil {
+		return model.Recommendation{}, err
+	}
+
+	return rec, nil
+}
+
+func (r *Repo) GetRecommendationsByUserIDRepo(id string) ([]model.Recommendation, error) {
+	var recs []model.Recommendation
+	rows, err := r.db.Query("SELECT * FROM recommendations WHERE user_id = $1", id)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	for rows.Next() {
+		var rec model.Recommendation
+		if err := rows.Scan(&rec.ID, &rec.UserID, &rec.ProductID, &rec.Score, &rec.CreatedAt, &rec.UpdatedAt); err != nil {
+			return nil, err
+		}
+		recs = append(recs, rec)
+	}
+
+	return recs, nil
+
+	//rows, err := r.db.Query("SELECT * FROM recommendations")
+	//if err != nil {
+	//	return nil, err
+	//}
+	//defer rows.Close()
+	//var recommendations []model.Recommendation
+	//for rows.Next() {
+	//	var rec model.Recommendation
+	//	if err := rows.Scan(&rec.ID, &rec.UserID, &rec.ProductID, &rec.Score, &rec.CreatedAt, &rec.UpdatedAt); err != nil {
+	//		return nil, err
+	//	}
+	//	recommendations = append(recommendations, rec)
+	//}
+	//return recommendations, nil
 }
 
 //func (r *Repo) GetUsersRepo() ([]model.User, error) {

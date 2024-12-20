@@ -20,10 +20,10 @@ type IRunner interface {
 	Stop() error
 }
 
-type IWorker interface {
-	Run(ctx context.Context) error
-	Stop() error
-}
+//type IWorker interface {
+//	Run(ctx context.Context) error
+//	Stop() error
+//}
 
 type App struct {
 	serverHTTP IRunner
@@ -41,10 +41,14 @@ func New() (*App, error) {
 	svc := service.New(db)
 
 	httpSrv := handlers.NewServer(appLoger, svc)
-	//kafkaWorker := NewWorker(svc)
+	//kafkaWorker, err := NewWorker(svc)
+	//if err != nil {
+	//	return nil, err
+	//}
+
 	return &App{
 		serverHTTP: httpSrv,
-		//worker: kafkaConsumer,
+		//worker:     &kafkaWorker,
 	}, nil
 }
 
@@ -56,7 +60,20 @@ func (a *App) Run(ctx context.Context) error {
 
 	var wg sync.WaitGroup
 
-	run := func(runner IRunner) {
+	//runConsumer := func(worker IWorker) {
+	//	wg.Add(1)
+	//	defer wg.Done()
+	//
+	//	err := worker.Run(ctx)
+	//	if err != nil {
+	//		panic(err)
+	//	}
+	//}
+	//
+	//go runConsumer(a.worker)
+	//closer.Add(a.worker.Stop)
+
+	runServ := func(runner IRunner) {
 		wg.Add(1)
 		defer wg.Done()
 
@@ -69,7 +86,7 @@ func (a *App) Run(ctx context.Context) error {
 		}
 	}
 
-	go run(a.serverHTTP)
+	go runServ(a.serverHTTP)
 	closer.Add(a.serverHTTP.Stop)
 
 	interruptChan := make(chan os.Signal, 1)
@@ -77,5 +94,10 @@ func (a *App) Run(ctx context.Context) error {
 
 	<-interruptChan
 
+	//wg.Wait()
+	return nil
+}
+
+func (a *App) Stop() error {
 	return nil
 }

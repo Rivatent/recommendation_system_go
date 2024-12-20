@@ -10,6 +10,8 @@ import (
 
 type IRecommendationsService interface {
 	GetRecommendations() ([]model.Recommendation, error)
+	GetRecommendationByID(id string) (model.Recommendation, error)
+	GetRecommendationsByUserID(id string) ([]model.Recommendation, error)
 	//GetUsers() ([]model.User, error)
 	//CreateUser(user model.User) (string, error)
 	//UpdateUser(user model.User) (model.User, error)
@@ -35,6 +37,26 @@ func (h *Handler) GetRecommendations(c *gin.Context) {
 		h.logger.Bg().Error("failed GetRecommendations", zap.Error(err))
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
+	}
+	c.JSON(http.StatusOK, recommendations)
+}
+
+func (h *Handler) GetRecommendationByID(c *gin.Context) {
+	id := c.Param("id")
+
+	recommendation, err := h.svc.GetRecommendationByID(id)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+	}
+	c.JSON(http.StatusOK, recommendation)
+}
+
+func (h *Handler) GetRecommendationsByUserID(c *gin.Context) {
+	id := c.Param("id")
+
+	recommendations, err := h.svc.GetRecommendationsByUserID(id)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 	}
 	c.JSON(http.StatusOK, recommendations)
 }
