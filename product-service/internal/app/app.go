@@ -3,6 +3,7 @@ package app
 import (
 	"context"
 	"errors"
+	"go.uber.org/zap"
 	"net/http"
 	"os"
 	"os/signal"
@@ -10,6 +11,7 @@ import (
 	"product-service/internal/handlers"
 	"product-service/internal/repository"
 	"product-service/internal/service"
+	"product-service/log"
 	"sync"
 )
 
@@ -23,12 +25,22 @@ type App struct {
 }
 
 func New() (*App, error) {
+	l := log.InitLogger().With(zap.String("app", "product-service"))
+
+	appLogger := log.NewFactory(l)
+
 	db := repository.New()
 	closer.Add(db.Close)
 
-	svc := service.New(db)
+	kafkaProd, err := service.NewKafkaProducer("kafka:29092", "product_updates")
+	if err != nil {
+		return nil, err
+	}
+	closer.Add(kafkaProd.Close)
 
-	httpSrv := handlers.NewServer(svc)
+	svc := service.New(db, kafkaProd)
+
+	httpSrv := handlers.NewServer(appLogger, svc)
 
 	return &App{
 		serverHttp: httpSrv,
