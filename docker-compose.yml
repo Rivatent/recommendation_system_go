@@ -97,6 +97,22 @@ services:
       zookeeper:
         condition: service_healthy
 
+  recommendations-service:
+    build:
+      context: ./recommendation-service
+      dockerfile: Dockerfile
+    ports:
+      - "8083:8083"
+    env_file:
+      - ./recommendation-service/.env
+    depends_on:
+      postgres:
+        condition: service_healthy
+      kafka:
+        condition: service_healthy
+      zookeeper:
+        condition: service_healthy
+
 #  redis:
 #    image: redis:latest
 #    ports:

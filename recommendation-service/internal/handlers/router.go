@@ -1,0 +1,40 @@
+package handlers
+
+import (
+	"github.com/gin-contrib/cors"
+	"github.com/gin-gonic/gin"
+	"recommendation-service/internal/service"
+	"recommendation-service/log"
+)
+
+func newRouter(l log.Factory, svc *service.Service) *gin.Engine {
+	router := gin.New()
+
+	router.Use(
+		gin.Recovery(),
+		gin.Logger(),
+		cors.New(cors.Config{
+			AllowAllOrigins: true,
+			AllowMethods:    []string{"POST", "GET", "PATCH", "DELETE"},
+		}),
+	)
+
+	AddHandlers(router, l, svc)
+
+	return router
+}
+
+func AddHandlers(router *gin.Engine, l log.Factory, svc *service.Service) {
+	handlers := New(l, svc)
+
+	app := router.Group("/api/v1")
+	{
+		userSvc := app.Group("/recommendations")
+		{
+			userSvc.GET("", handlers.GetRecommendations)
+			//userSvc.GET("/:id", handlers.GetRecommendationsByUserID)
+			//userSvc.GET("/:id", handlers.GetRecommendationByID)
+			//DELETE?
+		}
+	}
+}
