@@ -29,10 +29,6 @@ func (r *Repo) GetUsersRepo() ([]model.User, error) {
 func (r *Repo) CreateUserRepo(user model.User) (string, error) {
 	var userID string
 
-	if user.Username == "" || user.Email == "" || user.Password == "" {
-		return userID, errors.New("username, email, and password are required")
-	}
-
 	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(user.Password), bcrypt.DefaultCost)
 	if err != nil {
 		return userID, errors.New("failed to hash password")
