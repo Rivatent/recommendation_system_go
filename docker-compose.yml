@@ -44,12 +44,15 @@ services:
       KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:29092
       KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT
       KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
-      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 2
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_CREATE_TOPICS: "product_updates:1:1"  # создание топика product_updates с 1 партицией и 1 репликацией
     healthcheck:
       test: kafka-topics --bootstrap-server kafka:29092 --list
       interval: 30s
       timeout: 10s
       retries: 3
+
+      #TODO: Implement kafka cluster (2 servers) with replications
 
   kafka-ui:
     image: provectuslabs/kafka-ui

@@ -20,35 +20,32 @@ type IRunner interface {
 	Stop() error
 }
 
-//type IWorker interface {
-//	Run(ctx context.Context) error
-//	Stop() error
-//}
-
 type App struct {
-	serverHTTP IRunner
-	//worker     IWorker
+	serverHTTP    IRunner
+	kafkaConsumer IRunner
 }
 
 func New() (*App, error) {
 	l := log.InitLogger().With(zap.String("app", "recommendation-service"))
 
-	appLoger := log.NewFactory(l)
+	appLogger := log.NewFactory(l)
 
 	db := repository.New()
 	closer.Add(db.Close)
 
 	svc := service.New(db)
 
-	httpSrv := handlers.NewServer(appLoger, svc)
-	//kafkaWorker, err := NewWorker(svc)
-	//if err != nil {
-	//	return nil, err
-	//}
+	httpSrv := handlers.NewServer(appLogger, svc)
+
+	kafkaConsumer, err := NewKafkaConsumer(appLogger, svc)
+	if err != nil {
+		return nil, err
+	}
+	closer.Add(kafkaConsumer.Stop)
 
 	return &App{
-		serverHTTP: httpSrv,
-		//worker:     &kafkaWorker,
+		serverHTTP:    httpSrv,
+		kafkaConsumer: kafkaConsumer,
 	}, nil
 }
 
@@ -60,20 +57,7 @@ func (a *App) Run(ctx context.Context) error {
 
 	var wg sync.WaitGroup
 
-	//runConsumer := func(worker IWorker) {
-	//	wg.Add(1)
-	//	defer wg.Done()
-	//
-	//	err := worker.Run(ctx)
-	//	if err != nil {
-	//		panic(err)
-	//	}
-	//}
-	//
-	//go runConsumer(a.worker)
-	//closer.Add(a.worker.Stop)
-
-	runServ := func(runner IRunner) {
+	run := func(runner IRunner) {
 		wg.Add(1)
 		defer wg.Done()
 
@@ -86,15 +70,17 @@ func (a *App) Run(ctx context.Context) error {
 		}
 	}
 
-	go runServ(a.serverHTTP)
+	go run(a.serverHTTP)
 	closer.Add(a.serverHTTP.Stop)
+	go run(a.kafkaConsumer)
+	closer.Add(a.kafkaConsumer.Stop)
 
 	interruptChan := make(chan os.Signal, 1)
 	signal.Notify(interruptChan, os.Interrupt)
 
 	<-interruptChan
 
-	//wg.Wait()
+	wg.Wait()
 	return nil
 }
 

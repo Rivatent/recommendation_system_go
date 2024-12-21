@@ -4,54 +4,94 @@ import (
 	"context"
 	"errors"
 	"github.com/confluentinc/confluent-kafka-go/kafka"
-	"log"
+	"go.uber.org/zap"
 	"os"
-	"recommendation-service/internal/closer"
 	"recommendation-service/internal/service"
+	"recommendation-service/log"
 )
 
 type KafkaConsumer struct {
 	consumer *kafka.Consumer
-	topics   []string
+	logger   log.Factory
+	service  *service.Service
 }
 
-func NewWorker(service *service.Service) (KafkaConsumer, error) {
-	topicUser := os.Getenv("KAFKA_TOPIC_USER")
-	topicProduct := os.Getenv("KAFKA_TOPIC_PRODUCT")
-	if topicUser == "" || topicProduct == "" {
-		return KafkaConsumer{}, errors.New("KAFKA_TOPIC_USER or KAFKA_TOPIC_PRODUCT is not set")
+func NewKafkaConsumer(logger log.Factory, svc *service.Service) (*KafkaConsumer, error) {
+	brokers := os.Getenv("KAFKA_BROKER")
+	if brokers == "" {
+		logger.Bg().Error("KAFKA_BROKER environment variable not set")
+		return nil, errors.New("KAFKA_BROKER environment variable not set")
 	}
-	topics := []string{topicUser, topicProduct}
-	brokers := os.Getenv("KAFKA_BROKERS")
 
-	kafkaConsumerPtr, err := kafka.NewConsumer(&kafka.ConfigMap{
+	consumer, err := kafka.NewConsumer(&kafka.ConfigMap{
 		"bootstrap.servers": brokers,
+		"group.id":          "recommendation-service",
+		"auto.offset.reset": "earliest",
 	})
 	if err != nil {
-		return KafkaConsumer{}, err
+		logger.Bg().Error("Failed to create Kafka consumer", zap.Error(err))
+		return nil, err
 	}
-	closer.Add(kafkaConsumerPtr.Close)
-	err = kafkaConsumerPtr.SubscribeTopics(topics, nil)
+
+	err = consumer.Subscribe("product_updates", nil)
 	if err != nil {
-		return KafkaConsumer{}, err
+		logger.Bg().Error("Failed to subscribe to topic", zap.String("topic", "product_updates"), zap.Error(err))
+		return nil, err
 	}
 
-	kafkaConsumer := KafkaConsumer{kafkaConsumerPtr, topics}
-
-	return kafkaConsumer, err
+	return &KafkaConsumer{
+		consumer: consumer,
+		logger:   logger,
+		service:  svc,
+	}, nil
 }
 
 func (k *KafkaConsumer) Run(ctx context.Context) error {
-	for ctx.Err() == nil {
-		msg, err := k.consumer.ReadMessage(-1)
-		if err == nil {
-			log.Printf("Message on %s: %s\n", msg.TopicPartition, string(msg.Value))
-		} else {
-			log.Printf("Consumer error: %v (%v)\n", err, msg)
+	k.logger.Bg().Info("KafkaConsumer is running", zap.String("topic", "product_updates"))
+	defer k.logger.Bg().Info("KafkaConsumer stopped")
+
+	meta, err := k.consumer.GetMetadata(nil, true, 5000)
+	if err != nil {
+		k.logger.Bg().Error("Failed to fetch metadata", zap.Error(err))
+	} else {
+		k.logger.Bg().Info("Consumer metadata", zap.Any("metadata", meta))
+	}
+
+	for {
+		select {
+		case <-ctx.Done():
+			return ctx.Err()
+		default:
+			event := k.consumer.Poll(100) // Ожидание событий с timeout 100 мс
+			if event == nil {
+				continue
+			}
+
+			switch e := event.(type) {
+			case *kafka.Message:
+				k.logger.Bg().Info("Received message",
+					zap.String("topic", *e.TopicPartition.Topic),
+					zap.String("message", string(e.Value)),
+					zap.Int32("partition", e.TopicPartition.Partition))
+				//zap.Int64("offset", e.TopicPartition.Offset))
+
+				// Обработка сообщения
+				// err := k.service.ProcessMessage(e.Value)
+				// if err != nil {
+				//     k.logger.Bg().Error("Failed to process message", zap.Error(err))
+				// }
+
+			case kafka.Error:
+				k.logger.Bg().Error("Kafka error", zap.Error(e))
+
+			default:
+				k.logger.Bg().Debug("Ignored event", zap.Any("event", e))
+			}
 		}
 	}
-	return ctx.Err()
 }
+
 func (k *KafkaConsumer) Stop() error {
+	k.logger.Bg().Info("Stopping KafkaConsumer")
 	return k.consumer.Close()
 }
