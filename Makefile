@@ -15,6 +15,6 @@ clean:
 	rm -rf $(BINARY)
 
 docker-restart:
-	docker rm -f private-go-test-task_postgres_1 private-go-test-task_product-service_1 private-go-test-task_user-service_1
-	docker rmi private-go-test-task_product-service private-go-test-task_user-service
+	docker rm -f private-go-test-task_recommendation-service_1 private-go-test-task_product-service_1 private-go-test-task_user-service_1
+	docker rmi private-go-test-task_product-service private-go-test-task_user-service private-go-test-task_recommendation-service
 	docker-compose up --build -d
