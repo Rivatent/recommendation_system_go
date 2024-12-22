@@ -74,7 +74,7 @@ func (h *Handler) CreateUser(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusCreated, createdUserID)
+	c.JSON(http.StatusCreated, gin.H{"id": createdUserID})
 }
 
 func (h *Handler) GetUserByID(c *gin.Context) {

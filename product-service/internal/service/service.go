@@ -35,7 +35,7 @@ func (s *Service) CreateProduct(Product model.Product) (string, error) {
 	}
 
 	updateMsg := map[string]interface{}{
-		"event":   "Product_created",
+		//"event":   "Product_created",
 		"Product": Product,
 		//"id":      createdProductID,
 	}
@@ -53,7 +53,7 @@ func (s *Service) UpdateProduct(Product model.Product) (model.Product, error) {
 	}
 
 	updateMessage := map[string]interface{}{
-		"event":   "Product_updated",
+		//"event":   "Product_updated",
 		"Product": updatedProduct,
 	}
 	if err := s.KafkaProd.SendMessage(updateMessage, &s.KafkaProd.topicUpdate); err != nil {

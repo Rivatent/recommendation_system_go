@@ -37,10 +37,8 @@ func New() (*App, error) {
 
 	httpSrv := handlers.NewServer(appLogger, svc)
 
-	kafkaConsumer, err := NewKafkaConsumer(appLogger, svc)
-	if err != nil {
-		return nil, err
-	}
+	kafkaConsumer := service.NewKafkaConsumer(appLogger, db)
+
 	closer.Add(kafkaConsumer.Stop)
 
 	return &App{

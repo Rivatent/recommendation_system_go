@@ -45,7 +45,7 @@ services:
       KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT
       KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
-      KAFKA_CREATE_TOPICS: "product_updates:1:1"  # создание топика product_updates с 1 партицией и 1 репликацией
+      KAFKA_CREATE_TOPICS: "product_update:1:1, product_new:1:1, user_update:1:1, user_new:1:1"  # создание топика product_updates с 1 партицией и 1 репликацией
     healthcheck:
       test: kafka-topics --bootstrap-server kafka:29092 --list
       interval: 30s

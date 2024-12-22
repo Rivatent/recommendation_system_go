@@ -32,7 +32,7 @@ func New() (*App, error) {
 	db := repository.New()
 	closer.Add(db.Close)
 
-	kafkaProd, err := service.NewKafkaProducer(os.Getenv("KAFKA_BROKER"), os.Getenv("KAFKA_TOPIC"))
+	kafkaProd, err := service.NewKafkaProducer(os.Getenv("KAFKA_BROKER"), os.Getenv("KAFKA_TOPIC_NEW"), os.Getenv("KAFKA_TOPIC_UPDATE"))
 	if err != nil {
 		return nil, err
 	}

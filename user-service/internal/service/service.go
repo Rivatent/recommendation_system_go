@@ -34,11 +34,11 @@ func (s *Service) CreateUser(user model.User) (string, error) {
 	}
 
 	updateMsg := map[string]interface{}{
-		"event": "user_created",
-		"user":  user,
-		"id":    createdUserID,
+		//"event": "user_created",
+		"user": user,
+		//"id":    createdUserID,
 	}
-	if err := s.KafkaProd.SendMessage(updateMsg); err != nil {
+	if err := s.KafkaProd.SendMessage(updateMsg, &s.KafkaProd.topicNew); err != nil {
 		return createdUserID, err
 	}
 
@@ -55,7 +55,7 @@ func (s *Service) UpdateUser(user model.User) (model.User, error) {
 		"event": "user_updated",
 		"user":  updatedUser,
 	}
-	if err := s.KafkaProd.SendMessage(updateMessage); err != nil {
+	if err := s.KafkaProd.SendMessage(updateMessage, &s.KafkaProd.topicUpdate); err != nil {
 		return updatedUser, err
 	}
 

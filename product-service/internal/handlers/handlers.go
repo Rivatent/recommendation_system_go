@@ -30,6 +30,7 @@ func New(logger log.Factory, svc IProductService) *Handler {
 }
 
 func (h *Handler) UpdateProduct(c *gin.Context) {
+	//TODO: add validation
 	var product model.Product
 	if err := c.ShouldBindJSON(&product); err != nil {
 		h.logger.Bg().Error("failed UpdateProduct", zap.Error(err))
@@ -58,6 +59,7 @@ func (h *Handler) GetProducts(c *gin.Context) {
 }
 
 func (h *Handler) CreateProduct(c *gin.Context) {
+	//TODO: Validation
 	var product model.Product
 	if err := c.ShouldBindJSON(&product); err != nil {
 		h.logger.Bg().Error("failed CreateProduct", zap.Error(err))
@@ -72,7 +74,7 @@ func (h *Handler) CreateProduct(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusCreated, createdProductID)
+	c.JSON(http.StatusCreated, gin.H{"id": createdProductID})
 }
 
 func (h *Handler) GetProductByID(c *gin.Context) {

@@ -33,7 +33,6 @@ func New() (*App, error) {
 	closer.Add(db.Close)
 
 	kafkaProd := service.NewKafkaProducer(os.Getenv("KAFKA_BROKER"), os.Getenv("KAFKA_TOPIC_NEW_PRODUCT"), os.Getenv("KAFKA_TOPIC_UPDATE_PRODUCT"))
-
 	closer.Add(kafkaProd.Close)
 
 	svc := service.New(db, kafkaProd)

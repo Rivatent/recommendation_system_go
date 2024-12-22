@@ -3,7 +3,6 @@ package repository
 import (
 	"database/sql"
 	_ "github.com/lib/pq"
-	"log"
 	"os"
 )
 
@@ -15,15 +14,13 @@ func New() *Repo {
 	dsn := os.Getenv("DATABASE_URL")
 	db, err := sql.Open("postgres", dsn)
 	if err != nil {
-		log.Printf("========= Connection to database error: %v =========", err)
+		panic(err)
 		return nil
 	}
 	if err = db.Ping(); err != nil {
-		log.Printf("========= Ping to database error: %v =========", err)
+		panic(err)
 		return nil
 	}
-
-	log.Println("========= Connected to database via ping =========")
 
 	return &Repo{db: db}
 }
