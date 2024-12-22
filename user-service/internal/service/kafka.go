@@ -11,13 +11,13 @@ type KafkaProducer struct {
 	topicUpdate string
 }
 
-func NewKafkaProducer(brokers string, topicNew string, topicUpdate string) (*KafkaProducer, error) {
+func NewKafkaProducer(brokers string, topicNew string, topicUpdate string) *KafkaProducer {
 	p, err := kafka.NewProducer(&kafka.ConfigMap{"bootstrap.servers": brokers})
 	if err != nil {
 		panic(err)
 	}
 
-	return &KafkaProducer{producer: p, topicNew: topicNew, topicUpdate: topicUpdate}, nil
+	return &KafkaProducer{producer: p, topicNew: topicNew, topicUpdate: topicUpdate}
 }
 
 func (kp *KafkaProducer) SendMessage(message interface{}, topic *string) error {

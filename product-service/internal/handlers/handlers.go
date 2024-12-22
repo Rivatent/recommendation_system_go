@@ -5,6 +5,7 @@ import (
 	"go.uber.org/zap"
 	"net/http"
 	"product-service/internal/model"
+	"product-service/internal/validator"
 	"product-service/log"
 )
 
@@ -30,13 +31,20 @@ func New(logger log.Factory, svc IProductService) *Handler {
 }
 
 func (h *Handler) UpdateProduct(c *gin.Context) {
-	//TODO: add validation
 	var product model.Product
 	if err := c.ShouldBindJSON(&product); err != nil {
 		h.logger.Bg().Error("failed UpdateProduct", zap.Error(err))
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid input"})
 		return
 	}
+
+	//проверка валидации
+	if err := validator.Validate(product); err != nil {
+		h.logger.Bg().Error("failed validation", zap.Error(err))
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
 	updatedProduct, err := h.svc.UpdateProduct(product)
 	if err != nil {
 		h.logger.Bg().Error("failed UpdateProduct", zap.Error(err))
@@ -59,11 +67,17 @@ func (h *Handler) GetProducts(c *gin.Context) {
 }
 
 func (h *Handler) CreateProduct(c *gin.Context) {
-	//TODO: Validation
+
 	var product model.Product
 	if err := c.ShouldBindJSON(&product); err != nil {
 		h.logger.Bg().Error("failed CreateProduct", zap.Error(err))
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid input"})
+		return
+	}
+
+	if err := validator.Validate(product); err != nil {
+		h.logger.Bg().Error("failed validation", zap.Error(err))
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 

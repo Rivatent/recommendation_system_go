@@ -11,6 +11,7 @@ import (
 	"product-service/internal/handlers"
 	"product-service/internal/repository"
 	"product-service/internal/service"
+	"product-service/internal/validator"
 	"product-service/log"
 	"sync"
 )
@@ -28,6 +29,7 @@ func New() (*App, error) {
 	l := log.InitLogger().With(zap.String("app", "product-service"))
 
 	appLogger := log.NewFactory(l)
+	validator.InitValidator()
 
 	db := repository.New()
 	closer.Add(db.Close)

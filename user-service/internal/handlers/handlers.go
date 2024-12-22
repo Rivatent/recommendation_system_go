@@ -5,6 +5,7 @@ import (
 	"go.uber.org/zap"
 	"net/http"
 	"user-service/internal/model"
+	"user-service/internal/validator"
 	"user-service/log"
 )
 
@@ -37,6 +38,11 @@ func (h *Handler) UpdateUser(c *gin.Context) {
 	}
 
 	//проверка валидации
+	if err := validator.Validate(user); err != nil {
+		h.logger.Bg().Error("failed validation", zap.Error(err))
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
 
 	updatedUser, err := h.svc.UpdateUser(user)
 	if err != nil {
@@ -61,9 +67,16 @@ func (h *Handler) GetUsers(c *gin.Context) {
 
 func (h *Handler) CreateUser(c *gin.Context) {
 	var user model.User
+
 	if err := c.ShouldBindJSON(&user); err != nil {
 		h.logger.Bg().Error("failed CreateUser", zap.Error(err))
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid input"})
+		return
+	}
+
+	if err := validator.Validate(user); err != nil {
+		h.logger.Bg().Error("failed validation", zap.Error(err))
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 

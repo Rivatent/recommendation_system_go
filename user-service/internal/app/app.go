@@ -12,6 +12,7 @@ import (
 	"user-service/internal/handlers"
 	"user-service/internal/repository"
 	"user-service/internal/service"
+	"user-service/internal/validator"
 	"user-service/log"
 )
 
@@ -28,14 +29,13 @@ func New() (*App, error) {
 	l := log.InitLogger().With(zap.String("app", "user-service"))
 
 	appLogger := log.NewFactory(l)
+	validator.InitValidator()
 
 	db := repository.New()
 	closer.Add(db.Close)
 
-	kafkaProd, err := service.NewKafkaProducer(os.Getenv("KAFKA_BROKER"), os.Getenv("KAFKA_TOPIC_NEW"), os.Getenv("KAFKA_TOPIC_UPDATE"))
-	if err != nil {
-		return nil, err
-	}
+	kafkaProd := service.NewKafkaProducer(os.Getenv("KAFKA_BROKER"), os.Getenv("KAFKA_TOPIC_NEW"), os.Getenv("KAFKA_TOPIC_UPDATE"))
+
 	closer.Add(kafkaProd.Close)
 
 	svc := service.New(db, kafkaProd)
