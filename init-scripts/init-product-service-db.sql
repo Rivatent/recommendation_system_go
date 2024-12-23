@@ -5,8 +5,8 @@ CREATE TABLE products (
                           name VARCHAR(100) NOT NULL,
                           description TEXT,
                           price DECIMAL(10, 2) NOT NULL,
-                          rating DECIMAL(3, 2) DEFAULT 0.00, -- Рейтинг продукта (например, от 0.00 до 5.00)
-                          sales_count INT DEFAULT 0,         -- Количество продаж
+                          rating DECIMAL(3, 2) DEFAULT 4.00,
+                          sales_count INT DEFAULT 0,
                           created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                           updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );

@@ -8,10 +8,6 @@ import (
 	"time"
 )
 
-const (
-	queryProductNewMsg = ``
-)
-
 func (r *Repo) GetAnalyticsRepo() ([]model.Analytics, error) {
 	var analytics []model.Analytics
 
@@ -29,11 +25,6 @@ func (r *Repo) GetAnalyticsRepo() ([]model.Analytics, error) {
 	}
 
 	return analytics, nil
-}
-
-func (r *Repo) ProductUpdateMsgRepo(updatedProduct map[string]interface{}) error {
-
-	return nil
 }
 
 func (r *Repo) UpdateAnalyticsMsgRepo() error {
@@ -78,17 +69,22 @@ func (r *Repo) UpdateAnalyticsMsgRepo() error {
 	salesProgressionRate := 0.00
 
 	if previousTotalUsers > 0 {
-		usersProgressionRate = float64(totalUsers-previousTotalUsers) / float64(previousTotalUsers) * 100
+		usersProgressionRate = float64(totalUsers-previousTotalUsers) / float64(previousTotalUsers)
+	} else if previousTotalUsers == 0 && totalUsers > 0 {
+		usersProgressionRate = 100
 	}
+
 	if previousTotalSales > 0 {
-		salesProgressionRate = float64(totalSales-previousTotalSales) / float64(previousTotalSales) * 100
+		salesProgressionRate = float64(totalSales-previousTotalSales) / float64(previousTotalSales)
+	} else if previousTotalSales == 0 && totalSales > 0 {
+		salesProgressionRate = 100
 	}
 
 	_, err = tx.Exec(`
 		INSERT INTO analytics (
 			total_users, total_sales, sales_progression_rate, users_progression_rate, product_average_rating, created_at, updated_at
-		) VALUES ($1, $2, $3, $4, $5, $6, $6)
-	`, totalUsers, totalSales, salesProgressionRate, usersProgressionRate, avgRating, time.Now())
+		) VALUES ($1, $2, $3, $4, $5, $6, $7)
+	`, totalUsers, totalSales, salesProgressionRate, usersProgressionRate, avgRating, time.Now(), time.Now())
 	if err != nil {
 		tx.Rollback()
 		return fmt.Errorf("failed to insert analytics record: %w", err)
@@ -98,11 +94,6 @@ func (r *Repo) UpdateAnalyticsMsgRepo() error {
 	if err != nil {
 		return fmt.Errorf("failed to commit transaction: %w", err)
 	}
-
-	return nil
-}
-
-func (r *Repo) ProductNewMsgRepo(newProduct map[string]interface{}) error {
 
 	return nil
 }

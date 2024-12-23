@@ -3,7 +3,6 @@ package repository
 import (
 	"database/sql"
 	"errors"
-	"math"
 	"product-service/internal/model"
 )
 
@@ -50,10 +49,10 @@ func (r *Repo) CreateProductRepo(product model.Product) (string, error) {
 }
 
 func (r *Repo) UpdateProductRepo(product model.Product) (model.Product, error) {
-	var newRating float64
-	var salesCount int
+	var oldSalesCount int
 
-	err := r.db.QueryRow("SELECT sales_count FROM products WHERE id = $1", product.ID).Scan(&salesCount)
+	// Получаем текущее количество продаж из базы данных
+	err := r.db.QueryRow("SELECT sales_count FROM products WHERE id = $1", product.ID).Scan(&oldSalesCount)
 	if err != nil {
 		if err == sql.ErrNoRows {
 			return model.Product{}, errors.New("Product not found")
@@ -61,19 +60,35 @@ func (r *Repo) UpdateProductRepo(product model.Product) (model.Product, error) {
 		return model.Product{}, err
 	}
 
+	// Получаем новое количество продаж из структуры product
+	newSalesCount := product.SalesCount
+
+	// Вычисляем изменение количества продаж
+	salesChange := newSalesCount - oldSalesCount
+
+	// Базовый рейтинг и делитель для расчета
 	baseRating := 3.0
 	salesDivisor := 10.0
-	newRating = math.Min(5.0, baseRating+float64(salesCount)/salesDivisor)
 
+	// Рассчитываем новый рейтинг на основе изменения количества продаж
+	newRating := baseRating + float64(salesChange)/salesDivisor
+	if newRating < 0 {
+		newRating = 0 // Предотвращаем отрицательный рейтинг
+	} else if newRating > 5 {
+		newRating = 5 // Максимальный рейтинг
+	}
+
+	// Обновляем запись в базе данных
 	query := `
-        UPDATE products 
-        SET name = $1, description = $2, price = $3, rating = $4, updated_at = CURRENT_TIMESTAMP 
-        WHERE id = $5
-    `
-	_, err = r.db.Exec(query, product.Name, product.Description, product.Price, newRating, product.ID)
+	UPDATE products
+	SET name = $1, description = $2, price = $3, sales_count = $4, rating = $5, updated_at = CURRENT_TIMESTAMP
+	WHERE id = $6
+	`
+	_, err = r.db.Exec(query, product.Name, product.Description, product.Price, newSalesCount, newRating, product.ID)
 	if err != nil {
 		return model.Product{}, err
 	}
+
 	product.Rating = newRating
 
 	return product, nil

@@ -99,21 +99,24 @@ func (k *KafkaConsumer) Run(ctx context.Context) error {
 }
 
 func (k *KafkaConsumer) ProcessMessage(msg kafka.Message) error {
-	switch *msg.TopicPartition.Topic {
+	topicUpdateProduct := os.Getenv("KAFKA_TOPIC_UPDATE_PRODUCT")
+	topicNewProduct := os.Getenv("KAFKA_TOPIC_NEW_PRODUCT")
+	topicNewUser := os.Getenv("KAFKA_TOPIC_NEW_USER")
 
-	case os.Getenv("KAFKA_TOPIC_UPDATE_PRODUCT"):
+	switch *msg.TopicPartition.Topic {
+	case topicUpdateProduct:
 		err := k.ProductUpdateMsg(msg)
 		if err != nil {
 			k.logger.Bg().Error("Failed to process message", zap.Error(err))
 			return err
 		}
-	case os.Getenv("KAFKA_TOPIC_NEW_PRODUCT"):
+	case topicNewProduct:
 		err := k.ProductNewMsg(msg)
 		if err != nil {
 			k.logger.Bg().Error("Failed to process message", zap.Error(err))
 			return err
 		}
-	case os.Getenv("KAFKA_TOPIC_NEW_USER"):
+	case topicNewUser:
 		err := k.UserNewMsg(msg)
 		if err != nil {
 			k.logger.Bg().Error("Failed to process message", zap.Error(err))

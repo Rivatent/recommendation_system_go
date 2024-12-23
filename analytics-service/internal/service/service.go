@@ -6,10 +6,7 @@ import (
 
 type IRepo interface {
 	GetAnalyticsRepo() ([]model.Analytics, error)
-
 	UpdateAnalyticsMsgRepo() error
-	//ProductNewMsgRepo(newProduct map[string]interface{}) error
-	//ProductUpdateMsgRepo(updatedProduct map[string]interface{}) error
 }
 
 type Service struct {

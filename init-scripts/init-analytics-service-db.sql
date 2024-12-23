@@ -12,6 +12,6 @@ CREATE TABLE analytics (
 
 INSERT INTO analytics (total_users, total_sales, sales_progression_rate, users_progression_rate, product_average_rating)
 VALUES
-    (5, 3, 0.60, 0.50, 4.00),
-    (10, 7, 0.70, 1.00, 4.00),
-    (17, 13, 0.76, 1.70, 4.00);
+    (5, 120000, 0.60, 0.50, 4.00),
+    (10, 125000, 0.70, 1.00, 4.00),
+    (17, 129000, 0.76, 1.70, 4.00);

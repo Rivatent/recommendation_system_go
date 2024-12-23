@@ -65,7 +65,6 @@ func (k *KafkaConsumer) Run(ctx context.Context) error {
 	} else {
 		k.logger.Bg().Info("Consumer metadata", zap.Any("metadata", meta))
 	}
-
 	for {
 		select {
 		case <-ctx.Done():
@@ -98,13 +97,16 @@ func (k *KafkaConsumer) Run(ctx context.Context) error {
 }
 
 func (k *KafkaConsumer) ProcessMessage(msg kafka.Message) error {
-	switch *msg.TopicPartition.Topic {
+	topicUpdateProduct := os.Getenv("KAFKA_TOPIC_UPDATE_PRODUCT")
+	topicNewProduct := os.Getenv("KAFKA_TOPIC_NEW_PRODUCT")
+	topicNewUser := os.Getenv("KAFKA_TOPIC_NEW_USER")
 
-	case os.Getenv("KAFKA_TOPIC_UPDATE_PRODUCT"):
+	switch *msg.TopicPartition.Topic {
+	case topicUpdateProduct:
 		fallthrough
-	case os.Getenv("KAFKA_TOPIC_NEW_PRODUCT"):
+	case topicNewProduct:
 		fallthrough
-	case os.Getenv("KAFKA_TOPIC_NEW_USER"):
+	case topicNewUser:
 		err := k.UpdateAnalyticsMsg()
 		if err != nil {
 			k.logger.Bg().Error("Failed to process message", zap.Error(err))
@@ -116,31 +118,9 @@ func (k *KafkaConsumer) ProcessMessage(msg kafka.Message) error {
 	return nil
 }
 
-func (k *KafkaConsumer) ProductUpdateMsg(msg kafka.Message) error {
-	//var updatedProduct map[string]interface{}
-	//
-	//if err := json.Unmarshal(msg.Value, &updatedProduct); err != nil {
-	//	return fmt.Errorf("failed to unmarshal message: %w", err)
-	//}
-	//
-	//return k.db.ProductUpdateMsgRepo(updatedProduct)
-	return nil
-}
-
 func (k *KafkaConsumer) UpdateAnalyticsMsg() error {
 
 	return k.db.UpdateAnalyticsMsgRepo()
-}
-
-func (k *KafkaConsumer) ProductNewMsg(msg kafka.Message) error {
-	//var newProduct map[string]interface{}
-	//
-	//if err := json.Unmarshal(msg.Value, &newProduct); err != nil {
-	//	return fmt.Errorf("failed to unmarshal message: %w", err)
-	//}
-	//
-	//return k.db.ProductNewMsgRepo(newProduct)
-	return nil
 }
 
 func (k *KafkaConsumer) Stop() error {
