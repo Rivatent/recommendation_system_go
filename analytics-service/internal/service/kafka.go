@@ -105,7 +105,7 @@ func (k *KafkaConsumer) ProcessMessage(msg kafka.Message) error {
 	case os.Getenv("KAFKA_TOPIC_NEW_PRODUCT"):
 		fallthrough
 	case os.Getenv("KAFKA_TOPIC_NEW_USER"):
-		err := k.UserNewMsg()
+		err := k.UpdateAnalyticsMsg()
 		if err != nil {
 			k.logger.Bg().Error("Failed to process message", zap.Error(err))
 			return err
@@ -127,9 +127,9 @@ func (k *KafkaConsumer) ProductUpdateMsg(msg kafka.Message) error {
 	return nil
 }
 
-func (k *KafkaConsumer) UserNewMsg() error {
+func (k *KafkaConsumer) UpdateAnalyticsMsg() error {
 
-	return k.db.UserNewMsgRepo()
+	return k.db.UpdateAnalyticsMsgRepo()
 }
 
 func (k *KafkaConsumer) ProductNewMsg(msg kafka.Message) error {

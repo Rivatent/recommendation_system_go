@@ -7,7 +7,7 @@ import (
 type IRepo interface {
 	GetAnalyticsRepo() ([]model.Analytics, error)
 
-	UserNewMsgRepo() error
+	UpdateAnalyticsMsgRepo() error
 	//ProductNewMsgRepo(newProduct map[string]interface{}) error
 	//ProductUpdateMsgRepo(updatedProduct map[string]interface{}) error
 }

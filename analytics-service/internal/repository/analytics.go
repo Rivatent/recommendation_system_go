@@ -36,7 +36,7 @@ func (r *Repo) ProductUpdateMsgRepo(updatedProduct map[string]interface{}) error
 	return nil
 }
 
-func (r *Repo) UserNewMsgRepo() error {
+func (r *Repo) UpdateAnalyticsMsgRepo() error {
 	tx, err := r.db.Begin()
 	if err != nil {
 		return fmt.Errorf("failed to begin transaction: %w", err)
