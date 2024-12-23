@@ -34,7 +34,6 @@ func AddHandlers(router *gin.Engine, l log.Factory, svc *service.Service) {
 			userSvc.GET("", handlers.GetRecommendations)
 			userSvc.GET("/users/:id", handlers.GetRecommendationsByUserID)
 			userSvc.GET("/recs/:id", handlers.GetRecommendationByID)
-			//DELETE?
 		}
 	}
 }

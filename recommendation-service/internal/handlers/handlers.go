@@ -12,10 +12,6 @@ type IRecommendationsService interface {
 	GetRecommendations() ([]model.Recommendation, error)
 	GetRecommendationByID(id string) (model.Recommendation, error)
 	GetRecommendationsByUserID(id string) ([]model.Recommendation, error)
-	//GetUsers() ([]model.User, error)
-	//CreateUser(user model.User) (string, error)
-	//UpdateUser(user model.User) (model.User, error)
-	//GetUserByID(id string) (model.User, error)
 }
 
 type Handler struct {

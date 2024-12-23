@@ -32,11 +32,9 @@ func (s *Service) CreateUser(user model.User) (string, error) {
 	if err != nil {
 		return createdUserID, err
 	}
-
+	user.ID = createdUserID
 	updateMsg := map[string]interface{}{
-		//"event": "user_created",
 		"user": user,
-		//"id":    createdUserID,
 	}
 	if err := s.KafkaProd.SendMessage(updateMsg, &s.KafkaProd.topicNew); err != nil {
 		return createdUserID, err
