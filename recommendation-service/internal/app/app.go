@@ -36,10 +36,7 @@ func New() (*App, error) {
 	svc := service.New(db)
 
 	httpSrv := handlers.NewServer(appLogger, svc)
-
 	kafkaConsumer := service.NewKafkaConsumer(appLogger, db)
-
-	closer.Add(kafkaConsumer.Stop)
 
 	return &App{
 		serverHTTP:    httpSrv,
@@ -70,6 +67,7 @@ func (a *App) Run(ctx context.Context) error {
 
 	go run(a.serverHTTP)
 	closer.Add(a.serverHTTP.Stop)
+
 	go run(a.kafkaConsumer)
 	closer.Add(a.kafkaConsumer.Stop)
 

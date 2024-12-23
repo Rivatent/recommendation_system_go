@@ -44,9 +44,6 @@ func (r *Repo) CreateUserRepo(user model.User) (string, error) {
 }
 
 func (r *Repo) UpdateUserRepo(user model.User) (model.User, error) {
-	if user.Username == "" || user.Email == "" {
-		return model.User{}, errors.New("username and email are required")
-	}
 
 	var query string
 	if user.Password != "" {

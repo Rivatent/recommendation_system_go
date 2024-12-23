@@ -37,7 +37,6 @@ func (h *Handler) UpdateUser(c *gin.Context) {
 		return
 	}
 
-	//проверка валидации
 	if err := validator.Validate(user); err != nil {
 		h.logger.Bg().Error("failed validation", zap.Error(err))
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})

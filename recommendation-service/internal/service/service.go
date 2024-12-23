@@ -1,7 +1,6 @@
 package service
 
 import (
-	"github.com/confluentinc/confluent-kafka-go/kafka"
 	"recommendation-service/internal/model"
 )
 
@@ -9,9 +8,9 @@ type IRepo interface {
 	GetRecommendationsRepo() ([]model.Recommendation, error)
 	GetRecommendationByIDRepo(id string) (model.Recommendation, error)
 	GetRecommendationsByUserIDRepo(id string) ([]model.Recommendation, error)
-	UserNewMsgRepo(msg kafka.Message) error
-	ProductNewMsgRepo(msg kafka.Message) error
-	ProductUpdateMsgRepo(msg kafka.Message) error
+	UserNewMsgRepo(newUser map[string]interface{}) error
+	ProductNewMsgRepo(newProduct map[string]interface{}) error
+	ProductUpdateMsgRepo(updatedProduct map[string]interface{}) error
 }
 
 type Service struct {

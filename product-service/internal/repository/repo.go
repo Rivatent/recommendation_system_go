@@ -30,5 +30,6 @@ func (r *Repo) Close() error {
 	if err != nil {
 		return err
 	}
+
 	return nil
 }

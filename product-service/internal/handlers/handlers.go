@@ -37,14 +37,11 @@ func (h *Handler) UpdateProduct(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid input"})
 		return
 	}
-
-	//проверка валидации
 	if err := validator.Validate(product); err != nil {
 		h.logger.Bg().Error("failed validation", zap.Error(err))
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-
 	updatedProduct, err := h.svc.UpdateProduct(product)
 	if err != nil {
 		h.logger.Bg().Error("failed UpdateProduct", zap.Error(err))

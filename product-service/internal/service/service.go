@@ -49,7 +49,6 @@ func (s *Service) UpdateProduct(Product model.Product) (model.Product, error) {
 	if err != nil {
 		return model.Product{}, err
 	}
-
 	updateMessage := map[string]interface{}{
 		"product": updatedProduct,
 	}
@@ -65,6 +64,7 @@ func (s *Service) GetProductByID(id string) (model.Product, error) {
 	if err != nil {
 		return model.Product{}, err
 	}
+
 	return Product, nil
 }
 
@@ -73,5 +73,6 @@ func (s *Service) DeleteProductByID(id string) error {
 	if err != nil {
 		return err
 	}
+
 	return nil
 }

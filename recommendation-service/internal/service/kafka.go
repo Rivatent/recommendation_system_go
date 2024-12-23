@@ -2,6 +2,7 @@ package service
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"github.com/confluentinc/confluent-kafka-go/kafka"
 	"go.uber.org/zap"
@@ -99,19 +100,20 @@ func (k *KafkaConsumer) Run(ctx context.Context) error {
 
 func (k *KafkaConsumer) ProcessMessage(msg kafka.Message) error {
 	switch *msg.TopicPartition.Topic {
-	case "product_update":
-		err := k.db.ProductUpdateMsgRepo(msg)
+
+	case os.Getenv("KAFKA_TOPIC_UPDATE_PRODUCT"):
+		err := k.ProductUpdateMsg(msg)
 		if err != nil {
 			k.logger.Bg().Error("Failed to process message", zap.Error(err))
 			return err
 		}
-	case "product_new":
-		err := k.db.ProductNewMsgRepo(msg)
+	case os.Getenv("KAFKA_TOPIC_NEW_PRODUCT"):
+		err := k.ProductNewMsg(msg)
 		if err != nil {
 			k.logger.Bg().Error("Failed to process message", zap.Error(err))
 			return err
 		}
-	case "user_new":
+	case os.Getenv("KAFKA_TOPIC_NEW_USER"):
 		err := k.UserNewMsg(msg)
 		if err != nil {
 			k.logger.Bg().Error("Failed to process message", zap.Error(err))
@@ -123,16 +125,34 @@ func (k *KafkaConsumer) ProcessMessage(msg kafka.Message) error {
 	return nil
 }
 
-func (k *KafkaConsumer) ProductUpdateMsgRepo(msg kafka.Message) error {
-	return k.db.ProductUpdateMsgRepo(msg)
+func (k *KafkaConsumer) ProductUpdateMsg(msg kafka.Message) error {
+	var updatedProduct map[string]interface{}
+
+	if err := json.Unmarshal(msg.Value, &updatedProduct); err != nil {
+		return fmt.Errorf("failed to unmarshal message: %w", err)
+	}
+
+	return k.db.ProductUpdateMsgRepo(updatedProduct)
 }
 
 func (k *KafkaConsumer) UserNewMsg(msg kafka.Message) error {
-	return k.db.UserNewMsgRepo(msg)
+	var newUser map[string]interface{}
+
+	if err := json.Unmarshal(msg.Value, &newUser); err != nil {
+		return fmt.Errorf("failed to unmarshal message: %w", err)
+	}
+
+	return k.db.UserNewMsgRepo(newUser)
 }
 
-func (k *KafkaConsumer) ProductNewMsgRepo(msg kafka.Message) error {
-	return k.db.ProductNewMsgRepo(msg)
+func (k *KafkaConsumer) ProductNewMsg(msg kafka.Message) error {
+	var newProduct map[string]interface{}
+
+	if err := json.Unmarshal(msg.Value, &newProduct); err != nil {
+		return fmt.Errorf("failed to unmarshal message: %w", err)
+	}
+
+	return k.db.ProductNewMsgRepo(newProduct)
 }
 
 func (k *KafkaConsumer) Stop() error {

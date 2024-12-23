@@ -50,8 +50,7 @@ func (s *Service) UpdateUser(user model.User) (model.User, error) {
 	}
 
 	updateMessage := map[string]interface{}{
-		"event": "user_updated",
-		"user":  updatedUser,
+		"user": updatedUser,
 	}
 	if err := s.KafkaProd.SendMessage(updateMessage, &s.KafkaProd.topicUpdate); err != nil {
 		return updatedUser, err
