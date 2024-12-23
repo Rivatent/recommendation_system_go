@@ -1,20 +1,21 @@
 package main
 
 import (
-	"fmt"
-	"net/http"
+	"analytics-service/internal/app"
+	"context"
+	"log"
 )
 
-func helloHandler(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Type", "text/plain")
-	fmt.Fprintln(w, "Analytics-service")
-}
-
 func main() {
-	http.HandleFunc("/analytics", helloHandler)
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
 
-	fmt.Println("Started server at :8080")
-	if err := http.ListenAndServe(":8080", nil); err != nil {
-		fmt.Println("error running server:", err)
+	a, err := app.New()
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	if err = a.Run(ctx); err != nil {
+		log.Fatal(err)
 	}
 }
