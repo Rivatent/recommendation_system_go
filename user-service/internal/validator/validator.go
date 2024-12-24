@@ -29,7 +29,7 @@ func Validate(s interface{}) error {
 }
 
 func ValidateUsername(username string) error {
-	// Проверка на соответствие регулярному выражению
+
 	if !validUsername.MatchString(username) {
 		return fmt.Errorf("validator: invalid username")
 	}

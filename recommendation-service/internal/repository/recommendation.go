@@ -2,7 +2,6 @@ package repository
 
 import (
 	"fmt"
-	"log"
 	"recommendation-service/internal/model"
 )
 
@@ -102,7 +101,6 @@ func (r *Repo) ProductUpdateMsgRepo(updatedProduct map[string]interface{}) error
 	if productRating > 4.5 {
 		_, err := r.db.Exec(queryProductUpdateMsg)
 		if err != nil {
-			log.Printf("Error updating recommendations: %v", err)
 			return fmt.Errorf("could not update recommendations: %w", err)
 		}
 	}
@@ -121,7 +119,6 @@ func (r *Repo) UserNewMsgRepo(newUser map[string]interface{}) error {
 	}
 	_, err := r.db.Exec(queryUserNewMsg, userID)
 	if err != nil {
-		log.Printf("Error updating recommendations: %v", err)
 		return fmt.Errorf("could not update recommendations: %w", err)
 	}
 
@@ -144,7 +141,6 @@ func (r *Repo) ProductNewMsgRepo(newProduct map[string]interface{}) error {
 	if productRating > 4.5 {
 		_, err := r.db.Exec(queryProductNewMsg, productID, productRating)
 		if err != nil {
-			log.Printf("Error updating recommendations: %v", err)
 			return fmt.Errorf("could not update recommendations: %w", err)
 		}
 	}
