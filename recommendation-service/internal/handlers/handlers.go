@@ -42,6 +42,7 @@ func (h *Handler) GetRecommendationByID(c *gin.Context) {
 
 	recommendation, err := h.svc.GetRecommendationByID(id)
 	if err != nil {
+		h.logger.Bg().Error("failed GetRecommendationByID", zap.Error(err))
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
@@ -53,6 +54,7 @@ func (h *Handler) GetRecommendationsByUserID(c *gin.Context) {
 
 	recommendations, err := h.svc.GetRecommendationsByUserID(id)
 	if err != nil {
+		h.logger.Bg().Error("failed GetRecommendationsByUserID", zap.Error(err))
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}

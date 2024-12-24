@@ -78,6 +78,16 @@ services:
       - kafka
       - zookeeper
 
+  redis:
+    image: redis:latest
+    ports:
+      - "6379:6379"
+    healthcheck:
+      test: [ "CMD", "redis-cli", "ping" ]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
   user-service:
     build:
       context: ./user-service
@@ -92,6 +102,8 @@ services:
       kafka:
         condition: service_healthy
       zookeeper:
+        condition: service_healthy
+      redis:
         condition: service_healthy
 
   product-service:
@@ -109,6 +121,8 @@ services:
         condition: service_healthy
       zookeeper:
         condition: service_healthy
+      redis:
+        condition: service_healthy
 
   recommendations-service:
     build:
@@ -124,6 +138,8 @@ services:
       kafka:
         condition: service_healthy
       zookeeper:
+        condition: service_healthy
+      redis:
         condition: service_healthy
 
   analytics-service:
@@ -141,10 +157,5 @@ services:
         condition: service_healthy
       zookeeper:
         condition: service_healthy
-
-
-#  redis:
-#    image: redis:latest
-#    ports:
-#      - "6379:6379"
-#
+      redis:
+        condition: service_healthy

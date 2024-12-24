@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"os"
 	"os/signal"
+	"recommendation-service/cache"
 	"recommendation-service/internal/closer"
 	"recommendation-service/internal/handlers"
 	"recommendation-service/internal/repository"
@@ -33,7 +34,10 @@ func New() (*App, error) {
 	db := repository.New()
 	closer.Add(db.Close)
 
-	svc := service.New(db)
+	redisCache := cache.NewRedisCache()
+	closer.Add(redisCache.Close)
+
+	svc := service.New(db, redisCache)
 
 	httpSrv := handlers.NewServer(appLogger, svc)
 	kafkaConsumer := service.NewKafkaConsumer(appLogger, db)
