@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"context"
+	"errors"
 	"go.uber.org/zap"
 	"net"
 	"net/http"
@@ -43,7 +44,7 @@ func (s *Implementation) Run(_ context.Context) error {
 }
 
 func (s *Implementation) Stop() error {
-	if err := s.httpServer.Shutdown(context.Background()); err != nil {
+	if err := s.httpServer.Shutdown(context.Background()); err != nil && !errors.Is(err, http.ErrServerClosed) {
 		s.logger.Bg().Error("in httpServer.Shutdown", zap.Error(err))
 		return err
 	}

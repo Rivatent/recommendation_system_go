@@ -5,6 +5,7 @@ import (
 	"go.uber.org/zap"
 	"net/http"
 	"product-service/internal/model"
+	"product-service/internal/validator"
 	"product-service/log"
 )
 
@@ -36,6 +37,11 @@ func (h *Handler) UpdateProduct(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid input"})
 		return
 	}
+	if err := validator.Validate(product); err != nil {
+		h.logger.Bg().Error("failed validation", zap.Error(err))
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
 	updatedProduct, err := h.svc.UpdateProduct(product)
 	if err != nil {
 		h.logger.Bg().Error("failed UpdateProduct", zap.Error(err))
@@ -58,10 +64,17 @@ func (h *Handler) GetProducts(c *gin.Context) {
 }
 
 func (h *Handler) CreateProduct(c *gin.Context) {
+
 	var product model.Product
 	if err := c.ShouldBindJSON(&product); err != nil {
 		h.logger.Bg().Error("failed CreateProduct", zap.Error(err))
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid input"})
+		return
+	}
+
+	if err := validator.Validate(product); err != nil {
+		h.logger.Bg().Error("failed validation", zap.Error(err))
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
@@ -72,7 +85,7 @@ func (h *Handler) CreateProduct(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusCreated, createdProductID)
+	c.JSON(http.StatusCreated, gin.H{"id": createdProductID})
 }
 
 func (h *Handler) GetProductByID(c *gin.Context) {

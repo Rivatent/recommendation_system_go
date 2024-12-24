@@ -11,6 +11,7 @@ import (
 	"product-service/internal/handlers"
 	"product-service/internal/repository"
 	"product-service/internal/service"
+	"product-service/internal/validator"
 	"product-service/log"
 	"sync"
 )
@@ -28,14 +29,12 @@ func New() (*App, error) {
 	l := log.InitLogger().With(zap.String("app", "product-service"))
 
 	appLogger := log.NewFactory(l)
+	validator.InitValidator()
 
 	db := repository.New()
 	closer.Add(db.Close)
 
-	kafkaProd, err := service.NewKafkaProducer("kafka:29092", "product_updates")
-	if err != nil {
-		return nil, err
-	}
+	kafkaProd := service.NewKafkaProducer(os.Getenv("KAFKA_BROKER"), os.Getenv("KAFKA_TOPIC_NEW_PRODUCT"), os.Getenv("KAFKA_TOPIC_UPDATE_PRODUCT"))
 	closer.Add(kafkaProd.Close)
 
 	svc := service.New(db, kafkaProd)

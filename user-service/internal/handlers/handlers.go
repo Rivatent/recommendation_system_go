@@ -5,6 +5,7 @@ import (
 	"go.uber.org/zap"
 	"net/http"
 	"user-service/internal/model"
+	"user-service/internal/validator"
 	"user-service/log"
 )
 
@@ -25,16 +26,23 @@ func New(logger log.Factory, svc IUserService) *Handler {
 		logger: logger,
 		svc:    svc,
 	}
-
 }
 
 func (h *Handler) UpdateUser(c *gin.Context) {
 	var user model.User
+
 	if err := c.ShouldBindJSON(&user); err != nil {
 		h.logger.Bg().Error("failed UpdateUser", zap.Error(err))
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid input"})
 		return
 	}
+
+	if err := validator.Validate(user); err != nil {
+		h.logger.Bg().Error("failed validation", zap.Error(err))
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
 	updatedUser, err := h.svc.UpdateUser(user)
 	if err != nil {
 		h.logger.Bg().Error("failed UpdateUser", zap.Error(err))
@@ -58,9 +66,16 @@ func (h *Handler) GetUsers(c *gin.Context) {
 
 func (h *Handler) CreateUser(c *gin.Context) {
 	var user model.User
+
 	if err := c.ShouldBindJSON(&user); err != nil {
 		h.logger.Bg().Error("failed CreateUser", zap.Error(err))
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid input"})
+		return
+	}
+
+	if err := validator.Validate(user); err != nil {
+		h.logger.Bg().Error("failed validation", zap.Error(err))
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
@@ -71,7 +86,7 @@ func (h *Handler) CreateUser(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusCreated, createdUserID)
+	c.JSON(http.StatusCreated, gin.H{"id": createdUserID})
 }
 
 func (h *Handler) GetUserByID(c *gin.Context) {
@@ -79,7 +94,9 @@ func (h *Handler) GetUserByID(c *gin.Context) {
 
 	user, err := h.svc.GetUserByID(id)
 	if err != nil {
+		h.logger.Bg().Error("failed GetUserByID", zap.Error(err))
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
 	}
 	c.JSON(http.StatusOK, user)
 }

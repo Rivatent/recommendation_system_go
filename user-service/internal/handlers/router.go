@@ -35,7 +35,6 @@ func AddHandlers(router *gin.Engine, l log.Factory, svc *service.Service) {
 			userSvc.POST("", handlers.CreateUser)
 			userSvc.PATCH("", handlers.UpdateUser)
 			userSvc.GET("/:id", handlers.GetUserByID)
-			//DELETE?
 		}
 	}
 }

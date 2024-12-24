@@ -5,28 +5,42 @@ import (
 	"github.com/confluentinc/confluent-kafka-go/kafka"
 )
 
-type KafkaProducer struct {
-	producer *kafka.Producer
-	topic    string
+type IKafkaProducer interface {
+	SendMessage(message interface{}, topic *string) error
+	TopicNew() *string
+	TopicUpdate() *string
 }
 
-func NewKafkaProducer(brokers string, topic string) (*KafkaProducer, error) {
+type KafkaProducer struct {
+	producer    *kafka.Producer
+	topicNew    string
+	topicUpdate string
+}
+
+func (k *KafkaProducer) TopicNew() *string {
+	return &k.topicNew
+}
+func (k *KafkaProducer) TopicUpdate() *string {
+	return &k.topicUpdate
+}
+
+func NewKafkaProducer(brokers string, topicNew string, topicUpdate string) *KafkaProducer {
 	p, err := kafka.NewProducer(&kafka.ConfigMap{"bootstrap.servers": brokers})
 	if err != nil {
-		return nil, err
+		panic(err)
 	}
 
-	return &KafkaProducer{producer: p, topic: topic}, nil
+	return &KafkaProducer{producer: p, topicNew: topicNew, topicUpdate: topicUpdate}
 }
 
-func (kp *KafkaProducer) SendMessage(message interface{}) error {
+func (kp *KafkaProducer) SendMessage(message interface{}, topic *string) error {
 	msg, err := json.Marshal(message)
 	if err != nil {
 		return err
 	}
 
 	err = kp.producer.Produce(&kafka.Message{
-		TopicPartition: kafka.TopicPartition{Topic: &kp.topic, Partition: kafka.PartitionAny},
+		TopicPartition: kafka.TopicPartition{Topic: topic, Partition: kafka.PartitionAny},
 		Value:          msg,
 	}, nil)
 
