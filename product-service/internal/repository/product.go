@@ -51,7 +51,6 @@ func (r *Repo) CreateProductRepo(product model.Product) (string, error) {
 func (r *Repo) UpdateProductRepo(product model.Product) (model.Product, error) {
 	var oldSalesCount int
 
-	// Получаем текущее количество продаж из базы данных
 	err := r.db.QueryRow("SELECT sales_count FROM products WHERE id = $1", product.ID).Scan(&oldSalesCount)
 	if err != nil {
 		if err == sql.ErrNoRows {
@@ -59,26 +58,17 @@ func (r *Repo) UpdateProductRepo(product model.Product) (model.Product, error) {
 		}
 		return model.Product{}, err
 	}
-
-	// Получаем новое количество продаж из структуры product
 	newSalesCount := product.SalesCount
-
-	// Вычисляем изменение количества продаж
 	salesChange := newSalesCount - oldSalesCount
-
-	// Базовый рейтинг и делитель для расчета
 	baseRating := 3.0
 	salesDivisor := 10.0
-
-	// Рассчитываем новый рейтинг на основе изменения количества продаж
 	newRating := baseRating + float64(salesChange)/salesDivisor
 	if newRating < 0 {
-		newRating = 0 // Предотвращаем отрицательный рейтинг
+		newRating = 0
 	} else if newRating > 5 {
-		newRating = 5 // Максимальный рейтинг
+		newRating = 5
 	}
 
-	// Обновляем запись в базе данных
 	query := `
 	UPDATE products
 	SET name = $1, description = $2, price = $3, sales_count = $4, rating = $5, updated_at = CURRENT_TIMESTAMP

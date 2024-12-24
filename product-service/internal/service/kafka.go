@@ -5,10 +5,23 @@ import (
 	"github.com/confluentinc/confluent-kafka-go/kafka"
 )
 
+type IKafkaProducer interface {
+	SendMessage(message interface{}, topic *string) error
+	TopicNew() *string
+	TopicUpdate() *string
+}
+
 type KafkaProducer struct {
 	producer    *kafka.Producer
 	topicNew    string
 	topicUpdate string
+}
+
+func (k *KafkaProducer) TopicNew() *string {
+	return &k.topicNew
+}
+func (k *KafkaProducer) TopicUpdate() *string {
+	return &k.topicUpdate
 }
 
 func NewKafkaProducer(brokers string, topicNew string, topicUpdate string) *KafkaProducer {

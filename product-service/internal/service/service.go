@@ -14,10 +14,10 @@ type IRepo interface {
 
 type Service struct {
 	repo      IRepo
-	KafkaProd *KafkaProducer
+	KafkaProd IKafkaProducer
 }
 
-func New(repo IRepo, kafkaProd *KafkaProducer) *Service {
+func New(repo IRepo, kafkaProd IKafkaProducer) *Service {
 	return &Service{
 		repo:      repo,
 		KafkaProd: kafkaProd,
@@ -37,7 +37,7 @@ func (s *Service) CreateProduct(Product model.Product) (string, error) {
 	updateMsg := map[string]interface{}{
 		"product": Product,
 	}
-	if err := s.KafkaProd.SendMessage(updateMsg, &s.KafkaProd.topicNew); err != nil {
+	if err := s.KafkaProd.SendMessage(updateMsg, s.KafkaProd.TopicNew()); err != nil {
 		return createdProductID, err
 	}
 
@@ -52,7 +52,7 @@ func (s *Service) UpdateProduct(Product model.Product) (model.Product, error) {
 	updateMessage := map[string]interface{}{
 		"product": updatedProduct,
 	}
-	if err := s.KafkaProd.SendMessage(updateMessage, &s.KafkaProd.topicUpdate); err != nil {
+	if err := s.KafkaProd.SendMessage(updateMessage, s.KafkaProd.TopicUpdate()); err != nil {
 		return updatedProduct, err
 	}
 
