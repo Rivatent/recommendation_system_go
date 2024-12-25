@@ -9,6 +9,9 @@ import (
 	"product-service/log"
 )
 
+// IProductService интерфейс, предоставляющий методы для работы с продуктами.
+// Реализация этого интерфейса обрабатывает запросы, связанные с продуктами,
+// такие как получение, создание, обновление и удаление продуктов.
 type IProductService interface {
 	GetProducts() ([]model.Product, error)
 	CreateProduct(product model.Product) (string, error)
@@ -17,11 +20,18 @@ type IProductService interface {
 	DeleteProductByID(id string) error
 }
 
+// Handler структура, содержащая логгер и сервис продуктов.
+// Обработчики в этом пакете используют данный Handler для выполнения операций
+// с продуктами
 type Handler struct {
 	logger log.Factory
 	svc    IProductService
 }
 
+// New создает новый экземпляр Handler с заданным логгером и сервисом продуктов.
+// Параметры:
+//   - logger: экземпляр логгера для записи сообщений.
+//   - svc: экземпляр службы продуктов для выполнения бизнес-логики.
 func New(logger log.Factory, svc IProductService) *Handler {
 	return &Handler{
 		logger: logger,
@@ -30,6 +40,10 @@ func New(logger log.Factory, svc IProductService) *Handler {
 
 }
 
+// UpdateProduct обрабатывает HTTP запрос на обновление продукта.
+// Обновляет продукт и возвращает его обновленную информацию в формате JSON.
+// Параметры:
+//   - c: контекст Gin, содержащий информацию о запросе и ответе.
 func (h *Handler) UpdateProduct(c *gin.Context) {
 	var product model.Product
 	if err := c.ShouldBindJSON(&product); err != nil {
@@ -52,6 +66,10 @@ func (h *Handler) UpdateProduct(c *gin.Context) {
 	c.JSON(http.StatusOK, updatedProduct)
 }
 
+// GetProducts обрабатывает HTTP запрос на получение всех продуктов.
+// Возвращает список продуктов в формате JSON.
+// Параметры:
+//   - c: контекст Gin, содержащий информацию о запросе и ответе.
 func (h *Handler) GetProducts(c *gin.Context) {
 	products, err := h.svc.GetProducts()
 	if err != nil {
@@ -63,6 +81,10 @@ func (h *Handler) GetProducts(c *gin.Context) {
 	c.JSON(http.StatusOK, products)
 }
 
+// CreateProduct обрабатывает HTTP запрос на создание нового продукта.
+// Создает продукт и возвращает его уникальный идентификатор в формате JSON.
+// Параметры:
+//   - c: контекст Gin, содержащий информацию о запросе и ответе.
 func (h *Handler) CreateProduct(c *gin.Context) {
 
 	var product model.Product
@@ -88,6 +110,10 @@ func (h *Handler) CreateProduct(c *gin.Context) {
 	c.JSON(http.StatusCreated, gin.H{"id": createdProductID})
 }
 
+// GetProductByID обрабатывает HTTP запрос на получение продукта по его уникальному идентификатору.
+// Возвращает продукт в формате JSON.
+// Параметры:
+//   - c: контекст Gin, содержащий информацию о запросе и ответе.
 func (h *Handler) GetProductByID(c *gin.Context) {
 	id := c.Param("id")
 
@@ -100,6 +126,10 @@ func (h *Handler) GetProductByID(c *gin.Context) {
 	c.JSON(http.StatusOK, product)
 }
 
+// DeleteProductByID обрабатывает HTTP запрос на удаление продукта по его уникальному идентификатору.
+// Удаляет продукт и возвращает статус 204 No Content.
+// Параметры:
+//   - c: контекст Gin, содержащий информацию о запросе и ответе.
 func (h *Handler) DeleteProductByID(c *gin.Context) {
 	id := c.Param("id")
 

@@ -9,12 +9,26 @@ import (
 	"os"
 )
 
+// KafkaConsumer - структура, представляющая потребителя Kafka.
+// Она включает ссылки на Kafka consumer, логгер и интерфейс репозитория для работы с данными.
 type KafkaConsumer struct {
 	consumer *kafka.Consumer
 	logger   log.Factory
 	db       IRepo
 }
 
+// NewKafkaConsumer - функция для создания нового экземпляра KafkaConsumer.
+// Она настраивает Kafka потребителя, подписывается на заданные темы и возвращает указатель на новый KafkaConsumer.
+//
+// Параметры:
+// - logger log.Factory: логгер, который будет использован для записи событий и ошибок.
+// - repo IRepo: интерфейс репозитория для взаимодействия с данными.
+//
+// Возвращаемое значение:
+// - *KafkaConsumer: указатель на структуру KafkaConsumer, готовую к работе.
+//
+// Примечание: В случае отсутствия переменной окружения "KAFKA_BROKER" или ошибок на этапе
+// создания потребителя функция вызывает панику.
 func NewKafkaConsumer(logger log.Factory, repo IRepo) *KafkaConsumer {
 	brokers := os.Getenv("KAFKA_BROKER")
 	if brokers == "" {
@@ -55,6 +69,15 @@ func NewKafkaConsumer(logger log.Factory, repo IRepo) *KafkaConsumer {
 	}
 }
 
+// Run - метод, запускающий циклическую обработку сообщений из Kafka.
+// Он слушает события и обрабатывает входящие сообщения в зависимости от их типа.
+// Метод также учитывает контекст, чтобы корректно завершить работу по его сигналу.
+//
+// Параметры:
+// - ctx context.Context: контекст для контроля завершения работы.
+//
+// Возвращаемое значение:
+// - error: nil, если все прошло успешно; иначе ошибка, произошедшая при обработке.
 func (k *KafkaConsumer) Run(ctx context.Context) error {
 	k.logger.Bg().Info("KafkaConsumer is running", zap.String("topic", "product_update"))
 	defer k.logger.Bg().Info("KafkaConsumer stopped")
@@ -96,6 +119,15 @@ func (k *KafkaConsumer) Run(ctx context.Context) error {
 	}
 }
 
+// ProcessMessage - метод для обработки входящих сообщений из Kafka.
+// Он определяет, к какой теме относится сообщение, и вызывает соответствующий метод
+// для обновления аналитики, если оно принадлежит известной теме.
+//
+// Параметры:
+// - msg kafka.Message: входящее сообщение из Kafka, которое требуется обработать.
+//
+// Возвращаемое значение:
+// - error: nil, если сообщение было успешно обработано; в противном случае возвращается ошибка.
 func (k *KafkaConsumer) ProcessMessage(msg kafka.Message) error {
 	topicUpdateProduct := os.Getenv("KAFKA_TOPIC_UPDATE_PRODUCT")
 	topicNewProduct := os.Getenv("KAFKA_TOPIC_NEW_PRODUCT")
@@ -118,11 +150,21 @@ func (k *KafkaConsumer) ProcessMessage(msg kafka.Message) error {
 	return nil
 }
 
+// UpdateAnalyticsMsg - метод для обновления аналитических данных в репозитории.
+// Этот метод вызывает функцию репозитория, которая отвечает за изменение данных.
+//
+// Возвращаемое значение:
+// - error: nil, если обновление прошло успешно; иначе ошибка, произошедшая при обращении в репозиторий.
 func (k *KafkaConsumer) UpdateAnalyticsMsg() error {
 
 	return k.db.UpdateAnalyticsMsgRepo()
 }
 
+// Stop - метод для остановки KafkaConsumer и закрытия соединения с Kafka.
+// Он записывает информацию о завершении работы потребителя и завершает его.
+//
+// Возвращаемое значение:
+// - error: nil, если остановка прошла успешно; иначе ошибка, возникшая при закрытии соединения.
 func (k *KafkaConsumer) Stop() error {
 	k.logger.Bg().Info("Stopping KafkaConsumer")
 	return k.consumer.Close()

@@ -26,6 +26,10 @@ func (r *Repo) GetUsersRepo() ([]model.User, error) {
 	return users, nil
 }
 
+// Создает нового пользователя в базе данных.
+// Принимает структуру model.User, содержащую данные пользователя,
+// включая имя пользователя, электронную почту и пароль.
+// Возвращает уникальный идентификатор созданного пользователя и ошибку, если произошла ошибка.
 func (r *Repo) CreateUserRepo(user model.User) (string, error) {
 	var userID string
 
@@ -43,6 +47,10 @@ func (r *Repo) CreateUserRepo(user model.User) (string, error) {
 	return userID, nil
 }
 
+// Обновляет данные пользователя в базе данных.
+// Принимает структуру model.User, содержащую обновленные данные пользователя.
+// Если новый пароль указан, он будет предварительно хеширован.
+// Возвращает обновленную структуру model.User и ошибку, если произошла ошибка.
 func (r *Repo) UpdateUserRepo(user model.User) (model.User, error) {
 
 	var query string
@@ -68,6 +76,10 @@ func (r *Repo) UpdateUserRepo(user model.User) (model.User, error) {
 	return user, nil
 }
 
+// Получает пользователя из базы данных по идентификатору.
+// Принимает строковый идентификатор пользователя.
+// Возвращает структуру model.User с данными пользователя и ошибку,
+// если пользователь не найден или произошла другая ошибка.
 func (r *Repo) GetUserByIDRepo(id string) (model.User, error) {
 	var user model.User
 	row := r.db.QueryRow("SELECT id, username, email, password, created_at, updated_at FROM users WHERE id = $1", id)

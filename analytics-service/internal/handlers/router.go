@@ -7,6 +7,9 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+// newRouter - создает новый маршрутизатор для HTTP-сервера.
+// Принимает логгер и сервис аналитики в качестве аргументов.
+// Возвращает указатель на созданный экземпляр gin.Engine.
 func newRouter(l log.Factory, svc *service.Service) *gin.Engine {
 	router := gin.New()
 
@@ -24,6 +27,8 @@ func newRouter(l log.Factory, svc *service.Service) *gin.Engine {
 	return router
 }
 
+// AddHandlers - добавляет маршруты и соответствующие обработчики в маршрутизатор.
+// Принимает указатель на экземпляр gin.Engine, логгер и сервис аналитики в качестве аргументов.
 func AddHandlers(router *gin.Engine, l log.Factory, svc *service.Service) {
 	handlers := New(l, svc)
 

@@ -12,12 +12,13 @@ import (
 	"user-service/log"
 )
 
+// Структура Implementation: включает в себя логгер для ведения журналов и указатель на HTTP-сервер, который будет обрабатывать запросы.
 type Implementation struct {
-	logger log.Factory
-
+	logger     log.Factory
 	httpServer *http.Server
 }
 
+// NewServer: инициализирует сервер, устанавливая логирование и параметр чтения, настраивает маршрутизацию.
 func NewServer(logger log.Factory, svc *service.Service) *Implementation {
 	return &Implementation{
 		logger: logger,
@@ -28,6 +29,7 @@ func NewServer(logger log.Factory, svc *service.Service) *Implementation {
 	}
 }
 
+// Run: занимается фактическим запуском сервера, прослушиванием на заданном порту и логированием ошибок
 func (s *Implementation) Run(_ context.Context) error {
 	l, err := net.Listen("tcp", os.Getenv("HTTP_PORT"))
 	if err != nil {

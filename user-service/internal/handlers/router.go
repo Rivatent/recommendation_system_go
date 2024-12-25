@@ -7,6 +7,7 @@ import (
 	"user-service/log"
 )
 
+// newRouter создает и настраивает новый маршрутизатор Gin.
 func newRouter(l log.Factory, svc *service.Service) *gin.Engine {
 	router := gin.New()
 
@@ -24,6 +25,7 @@ func newRouter(l log.Factory, svc *service.Service) *gin.Engine {
 	return router
 }
 
+// AddHandlers определяет маршруты API для обработки запросов в маршрутизаторе Gin.
 func AddHandlers(router *gin.Engine, l log.Factory, svc *service.Service) {
 	handlers := New(l, svc)
 

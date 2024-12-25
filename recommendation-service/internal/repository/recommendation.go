@@ -40,6 +40,8 @@ const (
         ON CONFLICT (user_id, product_id) DO NOTHING;`
 )
 
+// GetRecommendationsRepo извлекает все рекомендации из базы данных.
+// Возвращает слайс рекомендаций и ошибку, если таковая возникла во время запроса.
 func (r *Repo) GetRecommendationsRepo() ([]model.Recommendation, error) {
 	var recommendations []model.Recommendation
 
@@ -59,6 +61,8 @@ func (r *Repo) GetRecommendationsRepo() ([]model.Recommendation, error) {
 	return recommendations, nil
 }
 
+// GetRecommendationByIDRepo извлекает рекомендацию по уникальному идентификатору.
+// Если рекомендация найдена, возвращает её и nil, в противном случае - пустую рекомендацию и ошибку.
 func (r *Repo) GetRecommendationByIDRepo(id string) (model.Recommendation, error) {
 	var rec model.Recommendation
 
@@ -70,6 +74,8 @@ func (r *Repo) GetRecommendationByIDRepo(id string) (model.Recommendation, error
 	return rec, nil
 }
 
+// GetRecommendationsByUserIDRepo извлекает рекомендации для указанного пользователя.
+// Возвращает слайс рекомендаций и ошибку, если таковая возникла во время запроса.
 func (r *Repo) GetRecommendationsByUserIDRepo(id string) ([]model.Recommendation, error) {
 	var recs []model.Recommendation
 
@@ -89,6 +95,9 @@ func (r *Repo) GetRecommendationsByUserIDRepo(id string) ([]model.Recommendation
 	return recs, nil
 
 }
+
+// ProductUpdateMsgRepo обновляет рекомендации на основе новых данных о продукте.
+// Метод проверяет, есть ли у продукта рейтинг выше 4.5, и если да, выполняет обновление.
 func (r *Repo) ProductUpdateMsgRepo(updatedProduct map[string]interface{}) error {
 	product, ok := updatedProduct["product"].(map[string]interface{})
 	if !ok {
@@ -108,6 +117,8 @@ func (r *Repo) ProductUpdateMsgRepo(updatedProduct map[string]interface{}) error
 	return nil
 }
 
+// UserNewMsgRepo создает новые рекомендации для нового пользователя на основе его данных.
+// Метод принимает новые данные о пользователе и добавляет рекомендации в таблицу.
 func (r *Repo) UserNewMsgRepo(newUser map[string]interface{}) error {
 	user, ok := newUser["user"].(map[string]interface{})
 	if !ok {
@@ -125,6 +136,8 @@ func (r *Repo) UserNewMsgRepo(newUser map[string]interface{}) error {
 	return nil
 }
 
+// ProductNewMsgRepo создает новые рекомендации для нового продукта на основе его данных.
+// Метод проверяет, есть ли у продукта рейтинг выше 4.5, и если да, добавляет новую рекомендацию.
 func (r *Repo) ProductNewMsgRepo(newProduct map[string]interface{}) error {
 	product, ok := newProduct["product"].(map[string]interface{})
 	if !ok {

@@ -8,15 +8,21 @@ import (
 	"net/http"
 )
 
+// IAnalyticsService - интерфейс для получения аналитических данных.
+// Определяет метод GetAnalytics для доступа к данным аналитики.
 type IAnalyticsService interface {
 	GetAnalytics() ([]model.Analytics, error)
 }
 
+// Handler - структура для обработки HTTP-запросов.
+// Содержит логгер и сервис аналитики для выполнения операций.
 type Handler struct {
 	logger log.Factory
 	svc    IAnalyticsService
 }
 
+// New - функция для создания нового экземпляра обработчика.
+// Принимает логгер и сервис аналитики и возвращает указатель на новый Handler.
 func New(logger log.Factory, svc IAnalyticsService) *Handler {
 	return &Handler{
 		logger: logger,
@@ -25,6 +31,9 @@ func New(logger log.Factory, svc IAnalyticsService) *Handler {
 
 }
 
+// GetAnalytics - HTTP-обработчик для получения аналитических данных.
+// Вызывает метод GetAnalytics у сервиса и возвращает данные в формате JSON.
+// В случае ошибки возвращает статус 500 и сообщение об ошибке.
 func (h *Handler) GetAnalytics(c *gin.Context) {
 	analytics, err := h.svc.GetAnalytics()
 	if err != nil {

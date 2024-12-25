@@ -10,12 +10,17 @@ import (
 	"recommendation-service/log"
 )
 
+// KafkaConsumer представляет собой консюмер Kafka, который обрабатывает сообщения
+// из различных топиков и взаимодействует с репозиторием для обновления данных.
 type KafkaConsumer struct {
 	consumer *kafka.Consumer
 	logger   log.Factory
 	db       IRepo
 }
 
+// NewKafkaConsumer создает новый экземпляр KafkaConsumer.
+// Он считывает настройки, такие как Kafka брокеры и топики, из переменных окружения.
+// В случае ошибки при создании консюмера приложение завершает работу.
 func NewKafkaConsumer(logger log.Factory, repo IRepo) *KafkaConsumer {
 	brokers := os.Getenv("KAFKA_BROKER")
 	if brokers == "" {
@@ -56,6 +61,8 @@ func NewKafkaConsumer(logger log.Factory, repo IRepo) *KafkaConsumer {
 	}
 }
 
+// Run начинает прослушивание Kafka и обработку получаемых сообщений.
+// Метод работает в бесконечном цикле, пока контекст не будет отменен.
 func (k *KafkaConsumer) Run(ctx context.Context) error {
 	k.logger.Bg().Info("KafkaConsumer is running", zap.String("topic", "product_update"))
 	defer k.logger.Bg().Info("KafkaConsumer stopped")
@@ -98,6 +105,8 @@ func (k *KafkaConsumer) Run(ctx context.Context) error {
 	}
 }
 
+// ProcessMessage обрабатывает входящее сообщение в зависимости от его источника (топика).
+// Если сообщение поступило из известного топика, оно передается соответствующему методу обработки.
 func (k *KafkaConsumer) ProcessMessage(msg kafka.Message) error {
 	topicUpdateProduct := os.Getenv("KAFKA_TOPIC_UPDATE_PRODUCT")
 	topicNewProduct := os.Getenv("KAFKA_TOPIC_NEW_PRODUCT")
@@ -128,6 +137,7 @@ func (k *KafkaConsumer) ProcessMessage(msg kafka.Message) error {
 	return nil
 }
 
+// ProductUpdateMsg обрабатывает сообщение, связанное с обновлением продукта.
 func (k *KafkaConsumer) ProductUpdateMsg(msg kafka.Message) error {
 	var updatedProduct map[string]interface{}
 
@@ -138,6 +148,7 @@ func (k *KafkaConsumer) ProductUpdateMsg(msg kafka.Message) error {
 	return k.db.ProductUpdateMsgRepo(updatedProduct)
 }
 
+// UserNewMsg обрабатывает сообщение о создании нового пользователя.
 func (k *KafkaConsumer) UserNewMsg(msg kafka.Message) error {
 	var newUser map[string]interface{}
 
@@ -148,6 +159,7 @@ func (k *KafkaConsumer) UserNewMsg(msg kafka.Message) error {
 	return k.db.UserNewMsgRepo(newUser)
 }
 
+// ProductNewMsg обрабатывает сообщение о создании нового продукта.
 func (k *KafkaConsumer) ProductNewMsg(msg kafka.Message) error {
 	var newProduct map[string]interface{}
 
@@ -158,6 +170,7 @@ func (k *KafkaConsumer) ProductNewMsg(msg kafka.Message) error {
 	return k.db.ProductNewMsgRepo(newProduct)
 }
 
+// Stop останавливает консюмер Kafka и закрывает соединение.
 func (k *KafkaConsumer) Stop() error {
 	k.logger.Bg().Info("Stopping KafkaConsumer")
 	return k.consumer.Close()
