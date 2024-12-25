@@ -4,12 +4,14 @@ import (
 	"github.com/gin-gonic/gin"
 	"go.uber.org/zap"
 	"net/http"
+	"time"
 	"user-service/internal/model"
+	"user-service/internal/monitoring"
 	"user-service/internal/validator"
 	"user-service/log"
 )
 
-// IUserService: интерефейс для взаимодействия с сервисом пользователей.
+// IUserService интерфейс для взаимодействия с сервисом пользователей.
 type IUserService interface {
 	GetUsers() ([]model.User, error)
 	CreateUser(user model.User) (string, error)
@@ -33,6 +35,9 @@ func New(logger log.Factory, svc IUserService) *Handler {
 
 // UpdateUser обрабатывает HTTP-запрос на обновление пользователя.
 func (h *Handler) UpdateUser(c *gin.Context) {
+	start := time.Now()
+	defer monitoring.CollectMetrics(start, c)
+
 	var user model.User
 
 	if err := c.ShouldBindJSON(&user); err != nil {
@@ -59,6 +64,9 @@ func (h *Handler) UpdateUser(c *gin.Context) {
 
 // GetUsers обрабатывает HTTP-запрос на получение списка пользователей.
 func (h *Handler) GetUsers(c *gin.Context) {
+	start := time.Now()
+	defer monitoring.CollectMetrics(start, c)
+
 	users, err := h.svc.GetUsers()
 	if err != nil {
 		h.logger.Bg().Error("failed GetUsers", zap.Error(err))
@@ -71,6 +79,9 @@ func (h *Handler) GetUsers(c *gin.Context) {
 
 // CreateUser обрабатывает HTTP-запрос на создание нового пользователя.
 func (h *Handler) CreateUser(c *gin.Context) {
+	start := time.Now()
+	defer monitoring.CollectMetrics(start, c)
+
 	var user model.User
 
 	if err := c.ShouldBindJSON(&user); err != nil {
@@ -97,6 +108,9 @@ func (h *Handler) CreateUser(c *gin.Context) {
 
 // GetUserByID обрабатывает HTTP-запрос на получение пользователя по идентификатору.
 func (h *Handler) GetUserByID(c *gin.Context) {
+	start := time.Now()
+	defer monitoring.CollectMetrics(start, c)
+
 	id := c.Param("id")
 
 	user, err := h.svc.GetUserByID(id)

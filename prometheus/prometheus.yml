@@ -1,0 +1,8 @@
+global:
+  scrape_interval: 5s  # Как часто собирать метрики
+
+scrape_configs:
+  - job_name: 'user-service'  # Название вашего сервиса
+    static_configs:
+      - targets: ['user-service:8081']  # Убедитесь, что порты, указанные здесь, совпадают с теми, которые вы используете в вашем приложении.
+    metrics_path: /metrics

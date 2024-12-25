@@ -11,6 +11,35 @@ import (
 	"user-service/internal/model"
 )
 
+//	func TestGetUsersRepo1(t *testing.T) {
+//		ctrl := gomock.NewController(t)
+//		defer ctrl.Finish()
+//
+//		mockRepo := mocks.NewMockIRepo(ctrl)
+//
+//		// Определите, что функция GetUsersRepo() будет возвращать пользователя
+//		mockRepo.EXPECT().GetUsersRepo().Return([]model.User{
+//			{ID: "1", Username: "user1", Email: "user1@example.com", Password: "password", CreatedAt: time.Now(), UpdatedAt: time.Now()},
+//			{ID: "2", Username: "user2", Email: "user2@example.com", Password: "password", CreatedAt: time.Now(), UpdatedAt: time.Now()},
+//		}, nil).Times(1)
+//
+//		// Вызовите метод и проверьте результат
+//		users, err := mockRepo.GetUsersRepo()
+//		assert.NoError(t, err)
+//		assert.Len(t, users, 2)
+//		assert.Equal(t, "user1", users[0].Username)
+//		assert.Equal(t, "user2", users[1].Username)
+//	}
+//
+//	func TestGetUsersRepo2(t *testing.T) {
+//		mockCtrl := gomock.NewController(t)
+//		defer mockCtrl.Finish()
+//
+//		mockRepo := mocks.NewMockIRepo(mockCtrl)
+//		mockRepo.EXPECT().GetUsersRepo().Return([]model.User{{ID: "id", Username: "name", Password: "pass"}}, nil).Times(1)
+//		testSvc := service.IRepo(mockRepo)
+//		testSvc.GetUsersRepo()
+//	}
 func TestGetUsersRepo(t *testing.T) {
 
 	db, mock, err := sqlmock.New()

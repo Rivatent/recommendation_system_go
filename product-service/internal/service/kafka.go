@@ -50,27 +50,27 @@ func NewKafkaProducer(brokers string, topicNew string, topicUpdate string) *Kafk
 // в которую нужно отправить сообщение.
 // Сообщение сериализуется в JSON формат.
 // В случае ошибки возвращает её.
-func (kp *KafkaProducer) SendMessage(message interface{}, topic *string) error {
+func (k *KafkaProducer) SendMessage(message interface{}, topic *string) error {
 	msg, err := json.Marshal(message)
 
 	if err != nil {
 		return err
 	}
-	err = kp.producer.Produce(&kafka.Message{
+	err = k.producer.Produce(&kafka.Message{
 		TopicPartition: kafka.TopicPartition{Topic: topic, Partition: kafka.PartitionAny},
 		Value:          msg,
 	}, nil)
 	if err != nil {
 		return err
 	}
-	kp.producer.Flush(1000)
+	k.producer.Flush(1000)
 
 	return nil
 }
 
 // Close закрывает продюсер и освобождает ресурсы.
-func (kp *KafkaProducer) Close() error {
-	kp.producer.Close()
+func (k *KafkaProducer) Close() error {
+	k.producer.Close()
 
 	return nil
 }

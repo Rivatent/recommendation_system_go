@@ -10,6 +10,7 @@ import (
 	"sync"
 	"user-service/internal/closer"
 	"user-service/internal/handlers"
+	"user-service/internal/monitoring"
 	"user-service/internal/repository"
 	"user-service/internal/service"
 	"user-service/internal/validator"
@@ -33,6 +34,7 @@ func New() (*App, error) {
 
 	appLogger := log.NewFactory(l)
 	validator.InitValidator()
+	monitoring.InitMetrics()
 
 	db := repository.New()
 	closer.Add(db.Close)

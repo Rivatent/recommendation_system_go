@@ -49,13 +49,13 @@ func NewKafkaProducer(brokers string, topicNew string, topicUpdate string) *Kafk
 // message - объект, который будет сериализован в JSON.
 // topic - указатель на строку с именем топика, в который должно быть отправлено сообщение.
 // Возвращает ошибку, если во время отправки сообщения произошла ошибка.
-func (kp *KafkaProducer) SendMessage(message interface{}, topic *string) error {
+func (k *KafkaProducer) SendMessage(message interface{}, topic *string) error {
 	msg, err := json.Marshal(message)
 	if err != nil {
 		return err
 	}
 
-	err = kp.producer.Produce(&kafka.Message{
+	err = k.producer.Produce(&kafka.Message{
 		TopicPartition: kafka.TopicPartition{Topic: topic, Partition: kafka.PartitionAny},
 		Value:          msg,
 	}, nil)
@@ -64,13 +64,13 @@ func (kp *KafkaProducer) SendMessage(message interface{}, topic *string) error {
 		return err
 	}
 
-	kp.producer.Flush(1000)
+	k.producer.Flush(1000)
 	return nil
 }
 
 // Close закрывает продюсер и освобождает все связанные ресурсы.
 // Возвращает ошибку, если закрытие прошло неудачно.
-func (kp *KafkaProducer) Close() error {
-	kp.producer.Close()
+func (k *KafkaProducer) Close() error {
+	k.producer.Close()
 	return nil
 }

@@ -7,7 +7,7 @@ import (
 	"net/http"
 	"os"
 	"os/signal"
-	"recommendation-service/cache"
+	"recommendation-service/internal/cache"
 	"recommendation-service/internal/closer"
 	"recommendation-service/internal/handlers"
 	"recommendation-service/internal/repository"
