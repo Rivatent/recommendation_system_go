@@ -1,20 +1,13 @@
-BINARY=./bin/
-STD_PATH=cmd/main.go
 
-.PHONY: all user-service
+.PHONY: all tests
 
-all: user-service
+all: tests
 
-user-service: clean
-	 cd user-service/cmd/ && go build -o ../../bin/user-service
-
-product-service: clean
-	cd porduct-service/cmd/ && go build -o ../../bin/product-service
-
-clean:
-	rm -rf $(BINARY)
-
-docker-restart:
-	docker rm -f private-go-test-task_recommendation-service_1 private-go-test-task_product-service_1 private-go-test-task_user-service_1
-	docker rmi private-go-test-task_product-service private-go-test-task_user-service private-go-test-task_recommendation-service
-	docker-compose up --build -d
+tests:
+	cd user-service/internal/service && go test -v -cover
+	cd user-service/internal/repository && go test -v -cover
+	cd recommendation-service/internal/service && go test -v -cover
+	cd recommendation-service/internal/repository && go test -v -cover
+	cd analytics-service/internal/repository && go test -v -cover
+	cd product-service/internal/service && go test -v -cover
+	cd product-service/internal/repository && go test -v -cover
