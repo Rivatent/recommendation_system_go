@@ -4,6 +4,7 @@ import (
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
+	"net/http"
 	"recommendation-service/internal/service"
 	"recommendation-service/pkg/log"
 )
@@ -21,12 +22,19 @@ func newRouter(l log.Factory, svc *service.Service) *gin.Engine {
 		gin.Logger(),
 		cors.New(cors.Config{
 			AllowAllOrigins: true,
-			AllowMethods:    []string{"POST", "GET", "PATCH", "DELETE"},
+			AllowMethods:    []string{"POST", "GET", "PATCH", "DELETE", "OPTIONS"},
+			AllowHeaders:    []string{"Origin", "Content-Type", "Accept"},
 		}),
 	)
 
 	AddHandlers(router, l, svc)
 
+	router.OPTIONS("/*any", func(c *gin.Context) {
+		c.Header("Access-Control-Allow-Origin", "*")
+		c.Header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, PATCH, OPTIONS")
+		c.Header("Access-Control-Allow-Headers", "Origin, Content-Type, Accept")
+		c.Status(http.StatusNoContent)
+	})
 	return router
 }
 

@@ -1,15 +1,73 @@
-# Система рекомендаций для пользователей
+<!-- Improved compatibility of наверх link: See: https://github.com/othneildrew/Best-README-Template/pull/73 -->
+<a id="readme-top"></a>
+<!--
+*** Thanks for checking out the Best-README-Template. If you have a suggestion
+*** that would make this better, please fork the repo and create a pull request
+*** or simply open an issue with the tag "enhancement".
+*** Don't forget to give the project a star!
+*** Thanks again! Now go create something AMAZING! :D
+-->
+
+
+
+<!-- PROJECT SHIELDS -->
+<!--
+*** I'm using markdown "reference style" links for readability.
+*** Reference links are enclosed in brackets [ ] instead of parentheses ( ).
+*** See the bottom of this document for the declaration of the reference variables
+*** for contributors-url, forks-url, etc. This is an optional, concise syntax you may use.
+*** https://www.markdownguide.org/basic-syntax/#reference-style-links
+-->
+
+
+<!-- PROJECT LOGO -->
+<br />
+<div align="center">
+  <a href="https://github.com/Rivatent/private-go-test-task">
+    <img src="images/gopher3.png" alt="Logo" width="150" height="80">
+  </a>
+
+<h3 align="center">Микросервисная система рекомендаций</h3>
+
+  <p align="center">
+    Тестовое задание на позицию Go-разработчика стажера
+    <br />
+  <a href="https://github.com/Rivatent/private-go-test-task/openapi.yaml"><strong>Документация по проекту »</strong></a>
+    <br />
+    <br />
+    <a href="https://github.com/Rivatent/private-go-test-task">Демонстрационное видео</a>
+  </p>
+</div>
+
+
+
+<!-- TABLE OF CONTENTS -->
+<details>
+  <summary>Оглавление</summary>
+  <ol>
+    <li><a href="#о-проекте">О проекте</a></li>
+    <li><a href="#начало-работы">Начало работы</a></li>
+    <li><a href="#тестирование">Тестирование</a></li>
+    <li><a href="#документация">Документация</a></li>
+    <li><a href="#архитектура">Архитектура</a></li>
+    <li><a href="#конфигурация-сервисов">Конфигурация сервисов</a></li>
+    <li><a href="#Контакты">Контакты</a></li>
+  </ol>
+</details>
+
+
+
+<!-- ABOUT THE PROJECT -->
+## О проекте
+
 Система рекомендаций для пользователей состоит из нескольких микросервисов, которые взаимодействуют между собой с использованием Apache Kafka, реляционной базы данных и кэша для улучшения производительности. Все компоненты системы запускаются с помощью Docker Compose.
 
-## Содержание
-- [Технологии](#технологии)
-- [Использование](#использование)
-- [Тестирование](#тестирование)
-- [Архитектура](#архитектура)
-- [Настройки](#настройки-компонентов-системы-рекомендаций)
+<p align="right">(<a href="#readme-top">наверх</a>)</p>
 
 
-## Технологии
+
+### Использованные технологии
+
 - [Go](https://golang.org/)
 - [Apache Kafka](https://kafka.apache.org/)
 - [Zookeeper](https://zookeeper.apache.org/)
@@ -22,32 +80,39 @@
 - [Validator V10](https://pkg.go.dev/github.com/go-playground/validator/v10)
 - [Zap Logger](https://github.com/uber-go/zap)
 
+<p align="right">(<a href="#readme-top">наверх</a>)</p>
 
-## Использование
 
-Перед началом убедитесь, что на вашей системе установлены следующие компоненты:
+
+<!-- GETTING STARTED -->
+## Начало работы
+
+### Перед началом наботы
+
+Убедитесь, что на вашей системе установлены следующие компоненты:
 - **Docker** (версия 19.03.0+)
 - **Docker Compose** (версия  1.25.0+)
 - Доступ к сети интернет для загрузки образов
 
-Можно проверить версию с помощью команды:
-```sh
-make check-version
-```
 
-Клонируйте репозиторий проекта с помощью команды:
+### Использование
+
+Клонируйте репозиторий
+
 ```sh
 git clone https://gitverse.ru/sbertech_hr/Go-internship-PavelRalchenkov
 cd Go-internship-PavelRalchenkov
 ```
-Каждый микросервис использует .env файл для конфигурации. Измените соответствующие файлы для всех микросервисов (например, user-service/.env, product-service/.env), в соответствии с желаемыми настройками.
-
+Каждый микросервис использует .env файл для конфигурации. 
+Измените соответствующие файлы для всех микросервисов (user-
+service/.env, product-service/.env, analytics-service/.env, 
+recommendation-service/.env), в соответствии с желаемыми настройками.
 
 Для запуска всех компонентов выполните следующую команду:
 ```sh
 make run
 ```
-или
+  или
 ```sh
 docker-compose up --build -d
 ```
@@ -55,27 +120,32 @@ docker-compose up --build -d
 ```sh
 make stop
 ```
-или
+    или
 ```sh
 docker-compose down
 ```
 
+<p align="right">(<a href="#readme-top">наверх</a>)</p>
+
+
+
+<!-- TESTING -->
 ## Тестирование
 Для тестирования API выполните запросы к эндпоинтам микросервисов с помощью любого HTTP-клиента, например Postman или curl.
 
-Пример запроса для добавления пользователя:
-```sh
-curl -X POST http://localhost:8081/users -H "Content-Type: application/json" -d '{"username": "New User","email": "new_user@example.com", "password": "new_password"}'
-```
+Подробное описание всех эндпоинтов можно найти в документации **openapi.yaml**, 
+а также их протестировать.
 
 Проект покрыт юнит-тестами. Для их запуска выполните команду:
 ```sh
 make tests
 ```
- 
-## Архитектура 
 
-### 1. Общее описание
+## Документация
+Для подробной информации о API см. [документацию OpenAPI](https://github.com/Rivatent/private-go-test-task/openapi.yaml).
+
+## Архитектура
+### Общее описание
 Система рекомендаций построена на основе микросервисной архитектуры, 
 где каждая часть системы отвечает за конкретную бизнес-логику. 
 Микросервисы взаимодействуют друг с другом через брокер сообщений
@@ -84,27 +154,23 @@ make tests
 запросов. С помощью системы мониторинга (Prometheus) собираются метрики по
 количеству запросов и времени их обработки для каждого микросервиса.
 
+### Компоненты системы
 
-
----
-
-### 2. Компоненты системы
-
-#### 2.1 User Service
+#### User Service
 - Отвечает за управление пользователями (регистрация, обновление профиля, получение информации).
 - Отправляет события о создании и обновлении пользователей в Kafka (темы `user_update`, `user_new`).
 
-#### 2.2 Product Service
+#### Product Service
 - Управляет данными о продуктах (создание, обновление, удаление).
 - Отправляет события в Kafka при изменении данных о продуктах (темы `product_update`, `product_new`).
 
-#### 2.3 Recommendation Service
+#### Recommendation Service
 - Подписывается на темы `user_new` и `product_updates`, `product_new` в Kafka.
 - Генерирует персонализированные рекомендации на основе активности пользователей и популярности продуктов.
 - Хранит рекомендации в базе данных.
 - Предоставляет REST API для получения рекомендаций.
 
-#### 2.4 Analytics Service
+#### Analytics Service
 - Подписывается на темы событий других сервисов.
 - Собирает статистику:
     - Количество пользователей и продуктов.
@@ -112,28 +178,26 @@ make tests
     - Производит расчет рейтинга прогрессии продаж и прироста пользователей
 - Обновляет данные аналитики в базе данных.
 
-#### 2.5 Кэш (Redis)
+#### Кэш (Redis)
 - Кэширует результаты запросов к рекомендациям.
 - Используется для снижения нагрузки на базу данных и ускорения ответов на запросы.
 
-#### 2.6 Брокер сообщений (Kafka)
+#### Брокер сообщений (Kafka)
 - Асинхронно передает события между микросервисами.
 
-#### 2.7 База данных (PostgreSQL)
+#### База данных (PostgreSQL)
 - Хранит структурированные данные:
     - Пользователи.
     - Продукты.
     - Рекомендации.
     - Аналитика.
 
-#### 2.8 Система мониторинга (Prometheus)
+#### Система мониторинга (Prometheus)
 - Собирает метрики со всех микросервисов:
     - Общее количество запросов
     - Время обработки запроса
 
----
-
-### 3. Взаимодействие между микросервисами
+### Взаимодействие между микросервисами
 
 1. **Регистрация или обновление пользователя**:
     - User Service отправляет событие в Kafka (`user_update`, `user_new`).
@@ -156,8 +220,7 @@ make tests
         - Подписывается на темы `user_new` и `product_update`, `product_new`.
         - Анализирует собранные данные и обновляет статистику в базе данных.
 
----
-## Настройки компонентов системы рекомендаций
+## Конфигурация сервисов
 
 ### 1. PostgreSQL
 - **Образ**: `postgres:17.0`
@@ -174,8 +237,6 @@ make tests
     - Таймаут: 5 секунд
     - Повторы: 5
 
----
-
 ### 2. Zookeeper
 - **Образ**: `confluentinc/cp-zookeeper:latest`
 - **Описание**: Координатор для Kafka-брокера.
@@ -188,8 +249,6 @@ make tests
     - Интервал: 10 секунд
     - Таймаут: 5 секунд
     - Повторы: 3
-
----
 
 ### 3. Kafka
 - **Образ**: `confluentinc/cp-kafka:latest`
@@ -213,7 +272,6 @@ make tests
         - `user_update`
         - `user_new`
 
----
 
 ### 4. Kafka UI
 - **Образ**: `provectuslabs/kafka-ui`
@@ -226,8 +284,6 @@ make tests
     - Порт: `8090` (проброшен на хостовую машину)
 - **Рестарт**: Автоматический при сбоях.
 
----
-
 ### 5. Redis
 - **Образ**: `redis:latest`
 - **Описание**: Кэш для повышения производительности.
@@ -239,7 +295,6 @@ make tests
     - Таймаут: 5 секунд
     - Повторы: 5
 
----
 
 ### 6. User Service
 - **Описание**: Микросервис для управления пользователями.
@@ -254,9 +309,9 @@ make tests
     - Kafka
     - Zookeeper
     - Redis
+    - Prometheus
     - Проверяется состояние через `healthcheck`.
 
----
 
 ### 7. Product Service
 - **Описание**: Микросервис для управления продуктами.
@@ -271,9 +326,10 @@ make tests
     - Kafka
     - Zookeeper
     - Redis
+    - Prometheus
     - Проверяется состояние через `healthcheck`.
 
----
+
 
 ### 8. Recommendation Service
 - **Описание**: Микросервис для генерации рекомендаций.
@@ -288,9 +344,9 @@ make tests
     - Kafka
     - Zookeeper
     - Redis
+    - Prometheus
     - Проверяется состояние через `healthcheck`.
 
----
 
 ### 9. Analytics Service
 - **Описание**: Микросервис для сбора аналитики.
@@ -305,6 +361,7 @@ make tests
     - Kafka
     - Zookeeper
     - Redis
+    - Prometheus
     - Проверяется состояние через `healthcheck`.
 
 ### 10. Prometheus
@@ -321,3 +378,34 @@ make tests
     - Интервал: 10 секунд
     - Таймаут: 5 секунд
     - Повторы: 3
+
+<!-- CONTACT -->
+## Контакты
+
+Павел Ральченков - [@paulralchenkov](https://t.me/paulralchenkov) - paulralchenkov@gmail.com
+
+<!-- PROJECT LOGO -->
+<br />
+<div align="center">
+  <a href="https://t.me/paulralchenkov">
+    <img src="images/qr.png" alt="Logo" width="150" height="150">
+  </a>
+<p align="right">(<a href="#readme-top">наверх</a>)</p>
+
+
+
+
+<!-- MARKDOWN LINKS & IMAGES -->
+<!-- https://www.markdownguide.org/basic-syntax/#reference-style-links -->
+[contributors-shield]: https://img.shields.io/github/contributors/Rivatent/private-go-test-task.svg?style=for-the-badge
+[contributors-url]: https://github.com/Rivatent/private-go-test-task/graphs/contributors
+[forks-shield]: https://img.shields.io/github/forks/Rivatent/private-go-test-task.svg?style=for-the-badge
+[forks-url]: https://github.com/Rivatent/private-go-test-task/network/members
+[stars-shield]: https://img.shields.io/github/stars/Rivatent/private-go-test-task.svg?style=for-the-badge
+[stars-url]: https://github.com/Rivatent/private-go-test-task/stargazers
+[issues-shield]: https://img.shields.io/github/issues/Rivatent/private-go-test-task.svg?style=for-the-badge
+[issues-url]: https://github.com/Rivatent/private-go-test-task/issues
+[license-shield]: https://img.shields.io/github/license/Rivatent/private-go-test-task.svg?style=for-the-badge
+[license-url]: https://github.com/Rivatent/private-go-test-task/blob/master/LICENSE.txt
+[product-screenshot]: images/usrs.png
+
