@@ -9,6 +9,7 @@ import (
 	"os/signal"
 	"product-service/internal/closer"
 	"product-service/internal/handlers"
+	"product-service/internal/monitoring"
 	"product-service/internal/repository"
 	"product-service/internal/service"
 	"product-service/internal/validator"
@@ -33,6 +34,7 @@ func New() (*App, error) {
 
 	appLogger := log.NewFactory(l)
 	validator.InitValidator()
+	monitoring.InitMetrics()
 
 	db := repository.New()
 	closer.Add(db.Close)

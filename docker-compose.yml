@@ -105,6 +105,8 @@ services:
         condition: service_healthy
       redis:
         condition: service_healthy
+      prometheus:
+        condition: service_healthy
 
   product-service:
     build:
@@ -122,6 +124,8 @@ services:
       zookeeper:
         condition: service_healthy
       redis:
+        condition: service_healthy
+      prometheus:
         condition: service_healthy
 
   recommendations-service:
@@ -141,6 +145,8 @@ services:
         condition: service_healthy
       redis:
         condition: service_healthy
+      prometheus:
+        condition: service_healthy
 
   analytics-service:
     build:
@@ -159,6 +165,8 @@ services:
         condition: service_healthy
       redis:
         condition: service_healthy
+      prometheus:
+        condition: service_healthy
 
   prometheus:
     image: prom/prometheus
@@ -169,8 +177,6 @@ services:
     command:
       - '--config.file=/prometheus/prometheus.yml'
       - '--storage.tsdb.path=/prometheus/data'
-    depends_on:
-      - user-service
     healthcheck:
       test: ["CMD", "wget", "--spider", "http://localhost:9090/-/healthy"]
       interval: 10s

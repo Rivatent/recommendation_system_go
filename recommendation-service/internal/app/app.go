@@ -10,6 +10,7 @@ import (
 	"recommendation-service/internal/cache"
 	"recommendation-service/internal/closer"
 	"recommendation-service/internal/handlers"
+	"recommendation-service/internal/monitoring"
 	"recommendation-service/internal/repository"
 	"recommendation-service/internal/service"
 	"recommendation-service/log"
@@ -34,6 +35,7 @@ func New() (*App, error) {
 	l := log.InitLogger().With(zap.String("app", "recommendation-service"))
 
 	appLogger := log.NewFactory(l)
+	monitoring.InitMetrics()
 
 	db := repository.New()
 	closer.Add(db.Close)

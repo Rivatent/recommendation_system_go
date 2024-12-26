@@ -3,6 +3,7 @@ package app
 import (
 	"analytics-service/internal/closer"
 	"analytics-service/internal/handlers"
+	"analytics-service/internal/monitoring"
 	"analytics-service/internal/repository"
 	"analytics-service/internal/service"
 	"analytics-service/log"
@@ -33,6 +34,7 @@ func New() (*App, error) {
 	l := log.InitLogger().With(zap.String("app", "analytics-service"))
 
 	appLogger := log.NewFactory(l)
+	monitoring.InitMetrics()
 
 	db := repository.New()
 	closer.Add(db.Close)

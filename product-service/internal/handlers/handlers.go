@@ -5,8 +5,10 @@ import (
 	"go.uber.org/zap"
 	"net/http"
 	"product-service/internal/model"
+	"product-service/internal/monitoring"
 	"product-service/internal/validator"
 	"product-service/log"
+	"time"
 )
 
 // IProductService интерфейс, предоставляющий методы для работы с продуктами.
@@ -45,6 +47,9 @@ func New(logger log.Factory, svc IProductService) *Handler {
 // Параметры:
 //   - c: контекст Gin, содержащий информацию о запросе и ответе.
 func (h *Handler) UpdateProduct(c *gin.Context) {
+	start := time.Now()
+	defer monitoring.CollectMetrics(start, c)
+
 	var product model.Product
 	if err := c.ShouldBindJSON(&product); err != nil {
 		h.logger.Bg().Error("failed UpdateProduct", zap.Error(err))
@@ -71,6 +76,9 @@ func (h *Handler) UpdateProduct(c *gin.Context) {
 // Параметры:
 //   - c: контекст Gin, содержащий информацию о запросе и ответе.
 func (h *Handler) GetProducts(c *gin.Context) {
+	start := time.Now()
+	defer monitoring.CollectMetrics(start, c)
+
 	products, err := h.svc.GetProducts()
 	if err != nil {
 		h.logger.Bg().Error("failed GetProducts", zap.Error(err))
@@ -86,6 +94,8 @@ func (h *Handler) GetProducts(c *gin.Context) {
 // Параметры:
 //   - c: контекст Gin, содержащий информацию о запросе и ответе.
 func (h *Handler) CreateProduct(c *gin.Context) {
+	start := time.Now()
+	defer monitoring.CollectMetrics(start, c)
 
 	var product model.Product
 	if err := c.ShouldBindJSON(&product); err != nil {
@@ -115,6 +125,9 @@ func (h *Handler) CreateProduct(c *gin.Context) {
 // Параметры:
 //   - c: контекст Gin, содержащий информацию о запросе и ответе.
 func (h *Handler) GetProductByID(c *gin.Context) {
+	start := time.Now()
+	defer monitoring.CollectMetrics(start, c)
+
 	id := c.Param("id")
 
 	product, err := h.svc.GetProductByID(id)
@@ -131,6 +144,9 @@ func (h *Handler) GetProductByID(c *gin.Context) {
 // Параметры:
 //   - c: контекст Gin, содержащий информацию о запросе и ответе.
 func (h *Handler) DeleteProductByID(c *gin.Context) {
+	start := time.Now()
+	defer monitoring.CollectMetrics(start, c)
+
 	id := c.Param("id")
 
 	err := h.svc.DeleteProductByID(id)

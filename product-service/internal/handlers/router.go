@@ -3,6 +3,7 @@ package handlers
 import (
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
+	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"product-service/internal/service"
 	"product-service/log"
 )
@@ -40,7 +41,7 @@ func newRouter(l log.Factory, svc *service.Service) *gin.Engine {
 //   - svc: указатель на сервис, предоставляющий бизнес-логику для работы с продуктами.
 func AddHandlers(router *gin.Engine, l log.Factory, svc *service.Service) {
 	handlers := New(l, svc)
-
+	router.GET("/metrics", gin.WrapH(promhttp.Handler()))
 	app := router.Group("/api/v1")
 	{
 		ProductSvc := app.Group("/products")

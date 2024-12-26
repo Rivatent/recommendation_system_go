@@ -5,7 +5,9 @@ import (
 	"go.uber.org/zap"
 	"net/http"
 	"recommendation-service/internal/model"
+	"recommendation-service/internal/monitoring"
 	"recommendation-service/log"
+	"time"
 )
 
 // IRecommendationsService - интерфейс, определяющий методы для работы с рекомендациями.
@@ -39,6 +41,9 @@ func New(logger log.Factory, svc IRecommendationsService) *Handler {
 // Запрашивает рекомендации из сервиса, обрабатывает возможные ошибки
 // и возвращает результаты клиенту в формате JSON.
 func (h *Handler) GetRecommendations(c *gin.Context) {
+	start := time.Now()
+	defer monitoring.CollectMetrics(start, c)
+
 	recommendations, err := h.svc.GetRecommendations()
 	if err != nil {
 		h.logger.Bg().Error("failed GetRecommendations", zap.Error(err))
@@ -52,6 +57,9 @@ func (h *Handler) GetRecommendations(c *gin.Context) {
 // Запрашивает идентификатор из параметров запроса, получает рекомендацию из сервиса,
 // обрабатывает возможные ошибки и возвращает результат клиенту в формате JSON.
 func (h *Handler) GetRecommendationByID(c *gin.Context) {
+	start := time.Now()
+	defer monitoring.CollectMetrics(start, c)
+
 	id := c.Param("id")
 
 	recommendation, err := h.svc.GetRecommendationByID(id)
@@ -67,6 +75,9 @@ func (h *Handler) GetRecommendationByID(c *gin.Context) {
 // Запрашивает идентификатор пользователя из параметров запроса, получает рекомендации из сервиса,
 // обрабатывает возможные ошибки и возвращает результаты клиенту в формате JSON.
 func (h *Handler) GetRecommendationsByUserID(c *gin.Context) {
+	start := time.Now()
+	defer monitoring.CollectMetrics(start, c)
+
 	id := c.Param("id")
 
 	recommendations, err := h.svc.GetRecommendationsByUserID(id)
