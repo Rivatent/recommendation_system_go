@@ -1,8 +1,6 @@
-# Минимально допустимые версии
 DOCKER_MIN_VERSION := 19.03.0
 DOCKER_COMPOSE_MIN_VERSION := 1.25.0
 
-# Получаем версии Docker и Docker Compose
 DOCKER_VERSION := $(shell docker --version | awk '{print $$3}' | sed 's/,//')
 DOCKER_COMPOSE_VERSION := $(shell docker-compose --version | awk '{print $$3}' | sed 's/,//')
 

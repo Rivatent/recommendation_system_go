@@ -2,7 +2,7 @@ package handlers
 
 import (
 	"analytics-service/internal/service"
-	"analytics-service/log"
+	"analytics-service/pkg/log"
 	"context"
 	"go.uber.org/zap"
 	"net"

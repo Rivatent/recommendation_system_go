@@ -6,7 +6,7 @@ import (
 	"net/http"
 	"recommendation-service/internal/model"
 	"recommendation-service/internal/monitoring"
-	"recommendation-service/log"
+	"recommendation-service/pkg/log"
 	"time"
 )
 

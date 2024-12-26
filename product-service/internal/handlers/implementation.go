@@ -7,7 +7,7 @@ import (
 	"net/http"
 	"os"
 	"product-service/internal/service"
-	"product-service/log"
+	"product-service/pkg/log"
 	"time"
 )
 

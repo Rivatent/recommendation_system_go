@@ -9,7 +9,7 @@ import (
 	"os"
 	"time"
 	"user-service/internal/service"
-	"user-service/log"
+	"user-service/pkg/log"
 )
 
 // Implementation включает в себя логгер для ведения журналов и указатель на HTTP-сервер, который будет обрабатывать запросы.

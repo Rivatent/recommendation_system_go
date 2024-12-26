@@ -26,7 +26,7 @@ func (r *Repo) GetAnalyticsRepo() ([]model.Analytics, error) {
 	for rows.Next() {
 		var a model.Analytics
 		if err := rows.Scan(&a.ID, &a.TotalUsers, &a.TotalSales, &a.SalesProgressionRate, &a.UsersProgressionRate, &a.ProductAverageRating, &a.CreatedAt, &a.UpdatedAt); err != nil {
-			return nil, err
+			return []model.Analytics{}, err
 		}
 		analytics = append(analytics, a)
 	}

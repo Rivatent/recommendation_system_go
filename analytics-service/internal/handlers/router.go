@@ -2,7 +2,7 @@ package handlers
 
 import (
 	"analytics-service/internal/service"
-	"analytics-service/log"
+	"analytics-service/pkg/log"
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"github.com/prometheus/client_golang/prometheus/promhttp"

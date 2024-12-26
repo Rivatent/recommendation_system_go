@@ -14,7 +14,7 @@ import (
 	"user-service/internal/repository"
 	"user-service/internal/service"
 	"user-service/internal/validator"
-	"user-service/log"
+	"user-service/pkg/log"
 )
 
 // IRunner определяет интерфейс для запуска и остановки компонентов приложения.

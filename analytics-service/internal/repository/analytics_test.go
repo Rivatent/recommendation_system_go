@@ -9,20 +9,20 @@ import (
 	"time"
 )
 
-func TestGetAnalyticsRepo(t *testing.T) {
-
+func Test_GetAnalyticsRepo(t *testing.T) {
 	db, mock, err := sqlmock.New()
 	if err != nil {
-		t.Fatalf("failed to create mock: %s", err)
+		fmt.Println("failed to open sqlmock database:", err)
 	}
 	defer db.Close()
 
 	repo := &Repo{db: db}
 
-	mock.ExpectQuery("^SELECT (.+) FROM analytics$").WillReturnRows(sqlmock.NewRows([]string{
-		"id", "total_users", "total_sales", "sales_progression_rate",
-		"users_progression_rate", "product_average_rating", "created_at", "updated_at"}).
-		AddRow("1", 10, 100, 0.10, 0.20, 4.5, time.Now(), time.Now()))
+	mock.ExpectQuery(`SELECT \* FROM analytics`).WillReturnRows(
+		sqlmock.NewRows([]string{
+			"id", "total_users", "total_sales", "sales_progression_rate",
+			"users_progression_rate", "product_average_rating", "created_at", "updated_at"}).
+			AddRow("1", 10, 100, 0.10, 0.20, 4.5, time.Time{}, time.Time{}))
 
 	analytics, err := repo.GetAnalyticsRepo()
 	if err != nil {
@@ -41,10 +41,36 @@ func TestGetAnalyticsRepo(t *testing.T) {
 			UpdatedAt:            time.Time{},
 		},
 	}
+	assert.Equal(t, expected, analytics)
 
-	if len(analytics) != len(expected) {
-		t.Errorf("expected %v, got %v", expected, analytics)
+	if err := mock.ExpectationsWereMet(); err != nil {
+		t.Errorf("there were unfulfilled expectations: %s", err)
 	}
+}
+
+func Test_GetAnalyticsRepoError(t *testing.T) {
+	db, mock, err := sqlmock.New()
+	if err != nil {
+		fmt.Println("failed to open sqlmock database:", err)
+	}
+	defer db.Close()
+
+	repo := &Repo{db: db}
+
+	mock.ExpectQuery(`SELECT \* FROM analytics`).WillReturnRows(
+		sqlmock.NewRows([]string{
+			"total_users", "total_sales", "sales_progression_rate",
+			"users_progression_rate", "product_average_rating", "created_at", "updated_at"}).
+			AddRow(10, 100, 0.10, 0.20, 4.5, time.Time{}, time.Time{}))
+
+	analytics, err := repo.GetAnalyticsRepo()
+	if err == nil {
+		t.Fatalf("expected error, got nil")
+	}
+
+	expected := []model.Analytics{}
+	assert.Equal(t, expected, analytics)
+	assert.Error(t, err)
 
 	if err := mock.ExpectationsWereMet(); err != nil {
 		t.Errorf("there were unfulfilled expectations: %s", err)

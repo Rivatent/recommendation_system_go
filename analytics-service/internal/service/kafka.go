@@ -1,7 +1,7 @@
 package service
 
 import (
-	"analytics-service/log"
+	"analytics-service/pkg/log"
 	"context"
 	"fmt"
 	"github.com/confluentinc/confluent-kafka-go/kafka"

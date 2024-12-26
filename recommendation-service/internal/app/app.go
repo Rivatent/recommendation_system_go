@@ -13,7 +13,7 @@ import (
 	"recommendation-service/internal/monitoring"
 	"recommendation-service/internal/repository"
 	"recommendation-service/internal/service"
-	"recommendation-service/log"
+	"recommendation-service/pkg/log"
 	"sync"
 )
 

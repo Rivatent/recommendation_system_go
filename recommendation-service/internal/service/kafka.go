@@ -7,7 +7,7 @@ import (
 	"github.com/confluentinc/confluent-kafka-go/kafka"
 	"go.uber.org/zap"
 	"os"
-	"recommendation-service/log"
+	"recommendation-service/pkg/log"
 )
 
 // KafkaConsumer представляет собой консюмер Kafka, который обрабатывает сообщения

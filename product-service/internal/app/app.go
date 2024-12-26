@@ -13,7 +13,7 @@ import (
 	"product-service/internal/repository"
 	"product-service/internal/service"
 	"product-service/internal/validator"
-	"product-service/log"
+	"product-service/pkg/log"
 	"sync"
 )
 

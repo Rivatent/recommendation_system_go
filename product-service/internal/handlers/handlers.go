@@ -7,7 +7,7 @@ import (
 	"product-service/internal/model"
 	"product-service/internal/monitoring"
 	"product-service/internal/validator"
-	"product-service/log"
+	"product-service/pkg/log"
 	"time"
 )
 

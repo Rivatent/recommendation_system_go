@@ -3,7 +3,7 @@ package handlers
 import (
 	"analytics-service/internal/model"
 	"analytics-service/internal/monitoring"
-	"analytics-service/log"
+	"analytics-service/pkg/log"
 	"github.com/gin-gonic/gin"
 	"go.uber.org/zap"
 	"net/http"

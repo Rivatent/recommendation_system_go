@@ -8,7 +8,7 @@ import (
 	"user-service/internal/model"
 	"user-service/internal/monitoring"
 	"user-service/internal/validator"
-	"user-service/log"
+	"user-service/pkg/log"
 )
 
 // IUserService интерфейс для взаимодействия с сервисом пользователей.

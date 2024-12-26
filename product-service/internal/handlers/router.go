@@ -5,7 +5,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"product-service/internal/service"
-	"product-service/log"
+	"product-service/pkg/log"
 )
 
 // newRouter создает новый экземпляр Gin-роутера, настраивает обработчики

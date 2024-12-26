@@ -6,7 +6,7 @@ import (
 	"analytics-service/internal/monitoring"
 	"analytics-service/internal/repository"
 	"analytics-service/internal/service"
-	"analytics-service/log"
+	"analytics-service/pkg/log"
 	"context"
 	"errors"
 	"go.uber.org/zap"
