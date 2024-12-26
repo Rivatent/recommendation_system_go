@@ -4,6 +4,9 @@ import (
 	"product-service/internal/model"
 )
 
+// IRepo - интерфейс для управления репозиторием продуктов.
+// Определяет методы для работы с продуктами,
+// включая получение, создание, обновление и удаление.
 type IRepo interface {
 	GetProductsRepo() ([]model.Product, error)
 	CreateProductRepo(Product model.Product) (string, error)
@@ -12,11 +15,15 @@ type IRepo interface {
 	DeleteProductByIDRepo(id string) error
 }
 
+// Service - структура, представляющая сервис управления продуктами.
+// Содержит репозиторий и Kafka продюсер для выполнения операций с продуктами.
 type Service struct {
 	repo      IRepo
 	KafkaProd IKafkaProducer
 }
 
+// New создает новый экземпляр сервиса.
+// Принимает в качестве параметров интерфейс репозитория и Kafka продюсера.
 func New(repo IRepo, kafkaProd IKafkaProducer) *Service {
 	return &Service{
 		repo:      repo,
@@ -24,10 +31,12 @@ func New(repo IRepo, kafkaProd IKafkaProducer) *Service {
 	}
 }
 
+// GetProducts получает все продукты из репозитория.
 func (s *Service) GetProducts() ([]model.Product, error) {
 	return s.repo.GetProductsRepo()
 }
 
+// CreateProduct создает новый продукт и отправляет сообщение в Kafka о создании продукта.
 func (s *Service) CreateProduct(Product model.Product) (string, error) {
 	createdProductID, err := s.repo.CreateProductRepo(Product)
 	if err != nil {
@@ -44,6 +53,7 @@ func (s *Service) CreateProduct(Product model.Product) (string, error) {
 	return createdProductID, nil
 }
 
+// UpdateProduct обновляет продукт и отправляет сообщение в Kafka о его обновлении.
 func (s *Service) UpdateProduct(Product model.Product) (model.Product, error) {
 	updatedProduct, err := s.repo.UpdateProductRepo(Product)
 	if err != nil {
@@ -59,6 +69,7 @@ func (s *Service) UpdateProduct(Product model.Product) (model.Product, error) {
 	return updatedProduct, nil
 }
 
+// GetProductByID получает продукт по его уникальному идентификатору.
 func (s *Service) GetProductByID(id string) (model.Product, error) {
 	Product, err := s.repo.GetProductByIDRepo(id)
 	if err != nil {
@@ -68,6 +79,7 @@ func (s *Service) GetProductByID(id string) (model.Product, error) {
 	return Product, nil
 }
 
+// DeleteProductByID удаляет продукт по его уникальному идентификатору.
 func (s *Service) DeleteProductByID(id string) error {
 	err := s.repo.DeleteProductByIDRepo(id)
 	if err != nil {

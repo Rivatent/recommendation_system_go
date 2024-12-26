@@ -10,26 +10,31 @@ import (
 	"sync"
 	"user-service/internal/closer"
 	"user-service/internal/handlers"
+	"user-service/internal/monitoring"
 	"user-service/internal/repository"
 	"user-service/internal/service"
 	"user-service/internal/validator"
-	"user-service/log"
+	"user-service/pkg/log"
 )
 
+// IRunner определяет интерфейс для запуска и остановки компонентов приложения.
 type IRunner interface {
 	Run(ctx context.Context) error
 	Stop() error
 }
 
+// App содержит все необходимые компоненты для работы микросервиса.
 type App struct {
 	serverHttp IRunner
 }
 
+// New создает новое приложение, инициализируя логгер, валидатор, базу данных, продюсер Kafka и сервер.
 func New() (*App, error) {
 	l := log.InitLogger().With(zap.String("app", "user-service"))
 
 	appLogger := log.NewFactory(l)
 	validator.InitValidator()
+	monitoring.InitMetrics()
 
 	db := repository.New()
 	closer.Add(db.Close)
@@ -47,6 +52,7 @@ func New() (*App, error) {
 	}, nil
 }
 
+// Run запускает приложение, обрабатывая прерывание с помощью сигнала и управляя жизненным циклом сервера.
 func (a *App) Run(ctx context.Context) error {
 	defer func() {
 		closer.CloseAll()
@@ -79,6 +85,7 @@ func (a *App) Run(ctx context.Context) error {
 	return nil
 }
 
+// Stop останавливает выполнение приложения
 func (a *App) Stop() error {
 	return nil
 }

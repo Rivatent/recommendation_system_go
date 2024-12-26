@@ -6,6 +6,9 @@ import (
 	"product-service/internal/model"
 )
 
+// GetProductsRepo извлекает список всех продуктов из базы данных.
+// Возвращает срез продуктов и ошибку, если она возникла.
+// Если при выполнении запроса возникает ошибка, функция возвращает nil и ошибку.
 func (r *Repo) GetProductsRepo() ([]model.Product, error) {
 	rows, err := r.db.Query(`
         SELECT id, name, description, price, rating, sales_count, created_at, updated_at
@@ -32,6 +35,9 @@ func (r *Repo) GetProductsRepo() ([]model.Product, error) {
 	return products, nil
 }
 
+// CreateProductRepo добавляет новый продукт в базу данных.
+// Принимает продукт в качестве параметра и возвращает его уникальный идентификатор и ошибку.
+// Если продукт успешно добавлен, возвращается его ID; в противном случае возвращается ошибка.
 func (r *Repo) CreateProductRepo(product model.Product) (string, error) {
 	var productID string
 
@@ -48,6 +54,9 @@ func (r *Repo) CreateProductRepo(product model.Product) (string, error) {
 	return productID, nil
 }
 
+// UpdateProductRepo обновляет информацию о существующем продукте.
+// Принимает продукт в качестве параметра и возвращает обновленный продукт и ошибку.
+// Если продукт найден и обновлён, возвращается обновлённый объект; в противном случае возвращается ошибка
 func (r *Repo) UpdateProductRepo(product model.Product) (model.Product, error) {
 	var oldSalesCount int
 
@@ -84,6 +93,9 @@ func (r *Repo) UpdateProductRepo(product model.Product) (model.Product, error) {
 	return product, nil
 }
 
+// GetProductByIDRepo извлекает продукт по его уникальному идентификатору.
+// Принимает ID продукта в качестве параметра и возвращает продукт и ошибку.
+// Если продукт найден, возвращается его объект; в противном случае возвращается ошибка.
 func (r *Repo) GetProductByIDRepo(id string) (model.Product, error) {
 	var product model.Product
 	query := `
@@ -104,6 +116,9 @@ func (r *Repo) GetProductByIDRepo(id string) (model.Product, error) {
 	return product, nil
 }
 
+// DeleteProductByIDRepo удаляет продукт по его уникальному идентификатору.
+// Принимает ID продукта в качестве параметра и возвращает ошибку, если она возникла.
+// Если продукт успешно удалён, функция возвращает nil; если продукт не найден, возвращается ошибка.
 func (r *Repo) DeleteProductByIDRepo(id string) error {
 	query := "DELETE FROM products WHERE id = $1"
 	result, err := r.db.Exec(query, id)

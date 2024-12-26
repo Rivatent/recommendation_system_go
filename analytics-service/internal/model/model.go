@@ -2,6 +2,8 @@ package model
 
 import "time"
 
+// Analytics - структура, представляющая аналитическую информацию о пользователях и продажах.
+// Эта структура используется для хранения и передачи данных о метриках аналитики.
 type Analytics struct {
 	ID                   string    `json:"id"`
 	TotalUsers           int       `json:"total_users"`

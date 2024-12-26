@@ -2,7 +2,6 @@ package main
 
 import (
 	"context"
-
 	_ "github.com/lib/pq"
 	"log"
 	"user-service/internal/app"

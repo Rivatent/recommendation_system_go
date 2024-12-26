@@ -2,6 +2,7 @@ package model
 
 import "time"
 
+// User представляет собой модель пользователя в системе.
 type User struct {
 	ID        string    `json:"id"`
 	Username  string    `json:"username" validate:"required"`

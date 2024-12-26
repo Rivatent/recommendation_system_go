@@ -1,20 +1,26 @@
-BINARY=./bin/
-STD_PATH=cmd/main.go
+DOCKER_MIN_VERSION := 19.03.0
+DOCKER_COMPOSE_MIN_VERSION := 1.25.0
 
-.PHONY: all user-service
+DOCKER_VERSION := $(shell docker --version | awk '{print $$3}' | sed 's/,//')
+DOCKER_COMPOSE_VERSION := $(shell docker-compose --version | awk '{print $$3}' | sed 's/,//')
 
-all: user-service
+.PHONY: all tests
 
-user-service: clean
-	 cd user-service/cmd/ && go build -o ../../bin/user-service
+all: tests
 
-product-service: clean
-	cd porduct-service/cmd/ && go build -o ../../bin/product-service
+check-version:
+	@echo Docker version is $(DOCKER_VERSION)
+	@echo Docker Compose version is $(DOCKER_COMPOSE_VERSION)
 
-clean:
-	rm -rf $(BINARY)
-
-docker-restart:
-	docker rm -f private-go-test-task_recommendation-service_1 private-go-test-task_product-service_1 private-go-test-task_user-service_1
-	docker rmi private-go-test-task_product-service private-go-test-task_user-service private-go-test-task_recommendation-service
+run:
 	docker-compose up --build -d
+stop:
+	docker-compose down
+tests:
+	cd user-service/internal/service && go test -v -cover
+	cd user-service/internal/repository && go test -v -cover
+	cd recommendation-service/internal/service && go test -v -cover
+	cd recommendation-service/internal/repository && go test -v -cover
+	cd analytics-service/internal/repository && go test -v -cover
+	cd product-service/internal/service && go test -v -cover
+	cd product-service/internal/repository && go test -v -cover

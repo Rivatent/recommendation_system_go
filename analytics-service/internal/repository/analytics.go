@@ -8,6 +8,13 @@ import (
 	"time"
 )
 
+// GetAnalyticsRepo - метод репозитория для получения всех записей аналитики из базы данных.
+// Он выполняет запрос к таблице `analytics` и возвращает массив структур `model.Analytics`,
+// содержащий все доступные записи аналитики. При возникновении ошибки возвращает nil и ошибку.
+//
+// Возвращаемые значения:
+// - []model.Analytics: массив записей аналитики.
+// - error: ошибка, если произошла ошибка выполнения запроса или обработки данных.
 func (r *Repo) GetAnalyticsRepo() ([]model.Analytics, error) {
 	var analytics []model.Analytics
 
@@ -19,7 +26,7 @@ func (r *Repo) GetAnalyticsRepo() ([]model.Analytics, error) {
 	for rows.Next() {
 		var a model.Analytics
 		if err := rows.Scan(&a.ID, &a.TotalUsers, &a.TotalSales, &a.SalesProgressionRate, &a.UsersProgressionRate, &a.ProductAverageRating, &a.CreatedAt, &a.UpdatedAt); err != nil {
-			return nil, err
+			return []model.Analytics{}, err
 		}
 		analytics = append(analytics, a)
 	}
@@ -27,6 +34,14 @@ func (r *Repo) GetAnalyticsRepo() ([]model.Analytics, error) {
 	return analytics, nil
 }
 
+// UpdateAnalyticsMsgRepo - метод репозитория для обновления записей аналитики в базе данных.
+// Он выполняет транзакционные операции для получения данных о пользователях и продажах,
+// вычисляет коэффициенты роста и вставляет новую запись в таблицу `analytics`.
+// В случае возникновения ошибок транзакция будет отменена.
+//
+// Возвращаемое значение:
+//   - error: ошибка, если не удалось выполнить операцию или ошибка в транзакции;
+//     иначе возвращает nil при успешном завершении.
 func (r *Repo) UpdateAnalyticsMsgRepo() error {
 	tx, err := r.db.Begin()
 	if err != nil {

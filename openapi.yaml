@@ -1,0 +1,603 @@
+openapi: 3.0.3
+info:
+  title: Сервис рекомендаций
+  description: |-
+    Документация сервиса рекомендаций 
+
+  version: 1.0.11
+
+servers:
+  - url: http://localhost:8081/api/v1/
+    description: user-service
+  - url: http://localhost:8082/api/v1/
+    description: product-service
+  - url: http://localhost:8083/api/v1/
+    description: recommendations-service
+  - url: http://localhost:8084/api/v1/
+    description: analytics-service
+tags:
+  - name: user-service
+    description: микросервис пользователей
+  - name: product-service
+    description: микросервис продуктов
+  - name: recommendations-service
+    description: микросервис рекомендаций
+  - name: analytics-service
+    description: микросервис аналитики
+paths:
+  /users:
+    get:
+      tags:
+        - user-service
+      summary: Получить список всех пользователей
+      operationId: getUsers
+      responses:
+        '200':
+          description: StatusOK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UsersArray' 
+        '500':
+          description: StatusInternalServerError
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerError' 
+    post:
+      tags: 
+        - user-service
+      summary: Создание пользователя
+      operationId: createUser
+      requestBody:
+        description: Экземпляр пользователя
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserPost'
+        required: true
+      responses:
+        '201':
+          description: StatusCreated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserPostAnswer'  
+        '400':
+          description: StatusBadRequest
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequestError'      
+        '500':
+          description: StatusInternalServerError
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerError'
+    patch:
+      tags: 
+        - user-service
+      summary: Изменение пользователя
+      operationId: updateUser
+      requestBody:
+        description: Экземпляр новых данных пользователя
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserPatch'
+        required: true
+      responses:
+        '200':
+          description: StatusOk
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Users' 
+        '400':
+          description: StatusBadRequest
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequestError'      
+        '500':
+          description: StatusInternalServerError
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerError'
+  /users/{id}:
+    get:
+      tags:
+        - user-service
+      summary: Получение пользователя по его ID
+      description: ''
+      operationId: getUserByID
+      parameters:
+        - name: id
+          in: path
+          description: 'Необходимо указать ID пользователя. '
+          required: true
+          schema:
+            type: string
+          example: 3ea5bc56-614e-474f-8a8a-2d77d5de14f8
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Users'   
+        '400':
+          description: StatusBadRequest
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequestError'      
+        '500':
+          description: StatusInternalServerError
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerError'
+  /products:
+    get:
+      tags:
+        - product-service
+      summary: Получить список всех продуктов
+      operationId: getProducts
+      responses:
+        '200':
+          description: StatusOK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProductArray' 
+        '500':
+          description: StatusInternalServerError
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerError' 
+    post:
+      tags: 
+        - product-service
+      summary: Добавление нового продукта
+      operationId: createProduct
+      requestBody:
+        description: Экземпляр продукта
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProductPost'
+        required: true
+      responses:
+        '201':
+          description: StatusCreated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProductPostAnswer'  
+        '400':
+          description: StatusBadRequest
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequestError'      
+        '500':
+          description: StatusInternalServerError
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerError'
+    patch:
+      tags: 
+        - product-service
+      summary: Изменение продукта
+      operationId: updateProduct
+      requestBody:
+        description: Экземпляр новых данных продукта
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProductPatch'
+        required: true
+      responses:
+        '200':
+          description: StatusOk
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Product' 
+        '400':
+          description: StatusBadRequest
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequestError'      
+        '500':
+          description: StatusInternalServerError
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerError'
+
+  /products/{id}:
+    get:
+      tags:
+        - product-service
+      summary: Получение продукта по его ID
+      operationId: getProductByID
+      parameters:
+        - name: id
+          in: path
+          description: 'Необходимо указать ID продукта. '
+          required: true
+          schema:
+            type: string
+          example: 8e35a0fb-78b5-4f78-93f5-e53148933042
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Product'   
+        '400':
+          description: StatusBadRequest
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequestError'      
+        '500':
+          description: StatusInternalServerError
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerError'
+    delete:
+      tags:
+        - product-service
+      summary: Удаление продукта по его ID
+      operationId: delProductByID
+      parameters:
+        - name: id
+          in: path
+          description: 'Необходимо указать ID продукта. '
+          required: true
+          schema:
+            type: string
+          example: 200bcfeb-c7c6-41d4-8c71-15535063990b
+      responses:
+        '204':
+          description: StatusNoContent       
+        '500':
+          description: StatusInternalServerError
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerError'
+  /recommendations:
+    get:
+      tags:
+        - recommendations-service
+      summary: Получить список всех рекомендаций
+      operationId: getRecommendations
+      responses:
+        '200':
+          description: StatusOK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RecArray' 
+        '500':
+          description: StatusInternalServerError
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerError' 
+  /recommendations/recs/{id}:
+    get:
+      tags:
+        - recommendations-service
+      summary: Получение рекомендации по ID
+      operationId: getRecByID
+      parameters:
+        - name: id
+          in: path
+          description: 'Необходимо указать ID рекомендации. '
+          required: true
+          schema:
+            type: string
+          example: 16dd2b3f-1a3f-44a2-b96f-46a751c0678a
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Rec'   
+        '400':
+          description: StatusBadRequest
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequestError'      
+        '500':
+          description: StatusInternalServerError
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerError'
+  /recommendations/users/{id}:
+    get:
+      tags:
+        - recommendations-service
+      summary: Получение рекомендаций по ID пользователя
+      operationId: getRecByUserID
+      parameters:
+        - name: id
+          in: path
+          description: 'Необходимо указать ID пользователя. '
+          required: true
+          schema:
+            type: string
+          example: e97f96c0-3136-4705-a5f5-6c28a5eae9b5
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Rec'   
+        '400':
+          description: StatusBadRequest
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequestError'      
+        '500':
+          description: StatusInternalServerError
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerError'
+  /analytics:
+    get:
+      tags:
+        - analytics-service
+      summary: Получить список всех записей сервиса аналитики
+      operationId: getAnalytics
+      responses:
+        '200':
+          description: StatusOK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AnalyticsArray' 
+        '500':
+          description: StatusInternalServerError
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerError' 
+
+components:
+  schemas:
+    Users:
+      type: object
+      properties:
+        id:
+          type: string
+          example: bfbf025d-05bc-4e3c-b7b4-0c1eb7b648a2
+        username:
+          type: string
+          example: John Doe
+        email:
+          type: string
+          example: john@email.com
+        password:
+          type: string
+          example: 'password'
+        created_at:
+          type: string
+          example: '2024-12-26T21:10:10.661474Z'
+        updated_at:
+          type: string
+          example: '2024-12-26T21:10:10.661474Z'
+    Product:
+      type: object
+      properties:
+        id:
+          type: string
+          example: f47ac10b-58cc-4372-a567-0e02b2c3d479
+        name:
+          type: string
+          example: Game Product
+        description:
+          type: string
+          example: some description for product
+        price:
+          type: number
+          format: float
+          example: 59.99
+        rating:
+          type: number
+          format: float
+          example: 4.8
+        sales_count:
+          type: number
+          format: int
+          example: 12000
+        created_at:
+          type: string
+          example: '2024-12-26T21:10:10.661474Z'
+        updated_at:
+          type: string
+          example: '2024-12-26T21:10:10.661474Z'
+    ProductArray:
+      type: array
+      items:
+        $ref: '#/components/schemas/Product'
+    UsersArray:
+      type: array
+      items:
+        $ref: '#/components/schemas/Users'
+    UserPost:
+      type: object
+      properties:
+        username:
+          type: string
+          example: New User
+        email:
+          type: string
+          example: new_user@email.com
+        password:
+          type: string
+          example: '$2a$06$kbn8pbd5BpqkrMbwj6Viiu1uAwsh7V3kF8ZVinjBrRw22JNOkN4ua'
+    UserPatch:
+      type: object
+      properties:
+        id:
+          type: string
+          example: da66f449-d978-4f26-85c4-c3577c6e3c9b
+        username:
+          type: string
+          example: Updated Username
+        email:
+          type: string
+          example: updated_user@email.com
+        password:
+          type: string
+          example: 'updated_password'
+    UserPostAnswer:
+      type: object
+      properties:
+        id:
+          type: string
+          example: e97f96c0-3136-4705-a5f5-6c28a5eae9b5
+    InternalServerError:
+      type: object
+      properties:
+        error:  
+          type: string
+          example: internal server error
+    BadRequestError:
+      type: object
+      properties:
+        error:  
+          type: string
+          example: bad request error
+    ProductPostAnswer:
+      type: object
+      properties:
+        id:
+          type: string
+          example: e97f96c0-3136-4705-a5f5-6c28a5eae9b5
+    ProductPost:
+      type: object
+      properties:
+        name:
+          type: string
+          example: Game Product
+        description:
+          type: string
+          example: some description for product
+        price:
+          type: number
+          format: float
+          example: 59.99
+        rating:
+          type: number
+          format: float
+          example: 4.8
+        sales_count:
+          type: number
+          format: int
+          example: 12000         
+    ProductPatch:
+      type: object
+      properties:
+        id:
+          type: string
+          example: 60b483bc-6246-474e-ab22-88c9eecf4420
+        name:
+          type: string
+          example: Changed Product
+        description:
+          type: string
+          example: some description for changed product
+        price:
+          type: number
+          format: float
+          example: 59.99
+        rating:
+          type: number
+          format: float
+          example: 4.8
+        sales_count:
+          type: number
+          format: int
+          example: 12000
+    Rec:
+      type: object
+      properties:
+        id:
+          type: string
+          example: 0a7d78fc-8a5e-4e9e-a2e9-9d5a62c0dbb3
+        user_id:
+          type: string
+          example: e97f96c0-3136-4705-a5f5-6c28a5eae9b5
+        product_id:
+          type: string
+          example: dfd719d3-b51f-4f60-b2e4-58c61c6efc10
+        score:
+          type: number
+          format: float
+          example: 4.5
+        created_at:
+          type: string
+          example: '2024-12-26T21:10:10.661474Z'
+        updated_at:
+          type: string
+          example: '2024-12-26T21:10:10.661474Z'
+    RecArray:
+      type: array
+      items:
+        $ref: '#/components/schemas/Rec'
+    Analytics:
+      type: object
+      properties:
+        id:
+          type: string
+          example: 9afeebf0-8b0c-45e2-9805-908afffd41c7
+        total_users:
+          type: number
+          format: int
+          example: 5
+        total_sales:
+          type: number
+          format: int
+          example: 100234
+        sales_progression_rate:
+          type: number
+          format: float
+          example: 0.5
+        users_progression_rate:
+          type: number
+          format: float
+          example: 0.6
+        product_average_rating:
+          type: number
+          format: int
+          example: 5
+        created_at:
+          type: string
+          example: '2024-12-26T21:10:10.661474Z'
+        updated_at:
+          type: string
+          example: '2024-12-26T21:10:10.661474Z'
+    AnalyticsArray:
+      type: array
+      items:
+        $ref: '#/components/schemas/Analytics'
