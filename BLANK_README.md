@@ -19,13 +19,6 @@
 *** https://www.markdownguide.org/basic-syntax/#reference-style-links
 -->
 
-[![Contributors][contributors-shield]][contributors-url]
-[![Forks][forks-shield]][forks-url]
-[![Stargazers][stars-shield]][stars-url]
-[![Issues][issues-shield]][issues-url]
-[![project_license][license-shield]][license-url]
-
-
 
 <!-- PROJECT LOGO -->
 <br />
@@ -39,14 +32,9 @@
   <p align="center">
     Тестовое задание на позицию Go-разработчика стажера
     <br />
-    <a href="https://github.com/Rivatent/private-go-test-task"><strong>Explore the docs »</strong></a>
     <br />
     <br />
-    <a href="https://github.com/Rivatent/private-go-test-task">View Demo</a>
-    ·
-    <a href="https://github.com/Rivatent/private-go-test-task/issues/new?labels=bug&template=bug-report---.md">Report Bug</a>
-    ·
-    <a href="https://github.com/Rivatent/private-go-test-task/issues/new?labels=enhancement&template=feature-request---.md">Request Feature</a>
+    <a href="https://github.com/Rivatent/private-go-test-task">Демонстрационное видео</a>
   </p>
 </div>
 
@@ -54,27 +42,15 @@
 
 <!-- TABLE OF CONTENTS -->
 <details>
-  <summary>Table of Contents</summary>
+  <summary>Оглавление</summary>
   <ol>
-    <li>
-      <a href="#о-проекте">О проекте</a>
-      <ul>
-        <li><a href="#использованные-технологии">Использованные технологии</a></li>
-      </ul>
-    </li>
-    <li>
-      <a href="#начало-работы">Начало работы</a>
-      <ul>
-        <li><a href="#prerequisites">Prerequisites</a></li>
-        <li><a href="#installation">Installation</a></li>
-      </ul>
-    </li>
-    <li><a href="#usage">Usage</a></li>
-    <li><a href="#roadmap">Roadmap</a></li>
-    <li><a href="#contributing">Contributing</a></li>
-    <li><a href="#license">License</a></li>
-    <li><a href="#contact">Contact</a></li>
-    <li><a href="#acknowledgments">Acknowledgments</a></li>
+    <li><a href="#о-проекте">О проекте</a></li>
+    <li><a href="#начало-работы">Начало работы</a></li>
+    <li><a href="#тестирование">Тестирование</a></li>
+    <li><a href="#документация">Документация</a></li>
+    <li><a href="#архитектура">Архитектура</a></li>
+    <li><a href="#конфигурация-сервисов">Конфигурация сервисов</a></li>
+    <li><a href="#Контакты">Контакты</a></li>
   </ol>
 </details>
 
@@ -122,7 +98,7 @@
 
 ### Использование
 
-- Клонируйте репозиторий
+Клонируйте репозиторий
 
 ```sh
 git clone https://gitverse.ru/sbertech_hr/Go-internship-PavelRalchenkov
@@ -134,27 +110,27 @@ service/.env, product-service/.env, analytics-service/.env,
 recommendation-service/.env), в соответствии с желаемыми настройками.
 
 Для запуска всех компонентов выполните следующую команду:
-    ```sh
-    make run
-    ```
+```sh
+make run
+```
   или
-    ```sh
-    docker-compose up --build -d
-    ```
+```sh
+docker-compose up --build -d
+```
 Для остановки всех компонентов выполните:
-    ```sh
-    make stop
-    ```
+```sh
+make stop
+```
     или
-    ```sh
-    docker-compose down
-    ```
+```sh
+docker-compose down
+```
 
 <p align="right">(<a href="#readme-top">наверх</a>)</p>
 
 
 
-<!-- USAGE EXAMPLES -->
+<!-- TESTING -->
 ## Тестирование
 Для тестирования API выполните запросы к эндпоинтам микросервисов с помощью любого HTTP-клиента, например Postman или curl.
 
@@ -162,35 +138,262 @@ recommendation-service/.env), в соответствии с желаемыми 
 ```sh
 curl -X POST http://localhost:8081/users -H "Content-Type: application/json" -d '{"username": "New User","email": "new_user@example.com", "password": "new_password"}'
 ```
+Все эндпоинты микросервисов можно протестировать с использованием OpenAPI документации.
 
 Проект покрыт юнит-тестами. Для их запуска выполните команду:
 ```sh
 make tests
 ```
 
-
-<!-- ROADMAP -->
-## Roadmap
-
-- [ ] Feature 1
-- [ ] Feature 2
-- [ ] Feature 3
-    - [ ] Nested Feature
-
-See the [open issues](https://github.com/Rivatent/private-go-test-task/issues) for a full list of proposed features (and known issues).
-
-<p align="right">(<a href="#readme-top">наверх</a>)</p>
+## Документация
 
 
+## Архитектура
+### Общее описание
+Система рекомендаций построена на основе микросервисной архитектуры, 
+где каждая часть системы отвечает за конкретную бизнес-логику. 
+Микросервисы взаимодействуют друг с другом через брокер сообщений
+(Apache Kafka), данные храняться в реляционной БД (PostgreSQL), для увеличения
+производительности сервиса рекомендаций используется кэширование(Redis) частых
+запросов. С помощью системы мониторинга (Prometheus) собираются метрики по
+количеству запросов и времени их обработки для каждого микросервиса.
 
+### Компоненты системы
+
+#### User Service
+- Отвечает за управление пользователями (регистрация, обновление профиля, получение информации).
+- Отправляет события о создании и обновлении пользователей в Kafka (темы `user_update`, `user_new`).
+
+#### Product Service
+- Управляет данными о продуктах (создание, обновление, удаление).
+- Отправляет события в Kafka при изменении данных о продуктах (темы `product_update`, `product_new`).
+
+#### Recommendation Service
+- Подписывается на темы `user_new` и `product_updates`, `product_new` в Kafka.
+- Генерирует персонализированные рекомендации на основе активности пользователей и популярности продуктов.
+- Хранит рекомендации в базе данных.
+- Предоставляет REST API для получения рекомендаций.
+
+#### Analytics Service
+- Подписывается на темы событий других сервисов.
+- Собирает статистику:
+    - Количество пользователей и продуктов.
+    - Популярность продуктов.
+    - Производит расчет рейтинга прогрессии продаж и прироста пользователей
+- Обновляет данные аналитики в базе данных.
+
+#### Кэш (Redis)
+- Кэширует результаты запросов к рекомендациям.
+- Используется для снижения нагрузки на базу данных и ускорения ответов на запросы.
+
+#### Брокер сообщений (Kafka)
+- Асинхронно передает события между микросервисами.
+
+#### База данных (PostgreSQL)
+- Хранит структурированные данные:
+    - Пользователи.
+    - Продукты.
+    - Рекомендации.
+    - Аналитика.
+
+#### Система мониторинга (Prometheus)
+- Собирает метрики со всех микросервисов:
+    - Общее количество запросов
+    - Время обработки запроса
+
+### Взаимодействие между микросервисами
+
+1. **Регистрация или обновление пользователя**:
+    - User Service отправляет событие в Kafka (`user_update`, `user_new`).
+    - Recommendation Service обновляет данные для рекомендаций.
+    - Analytics Service собирает данные для обновления аналитики.
+
+2. **Добавление или обновление продукта**:
+    - Product Service отправляет событие в Kafka (`product_update`, `product_new`).
+    - Recommendation Service обновляет данные для рекомендаций.
+    - Analytics Service фиксирует изменения для аналитики.
+
+3. **Генерация рекомендаций**:
+    - Recommendation Service:
+        - Получает данные о пользователях и продуктах через Kafka.
+        - Анализирует популярность продуктов.
+        - Кэширует часто запрашиваемые рекомендации в Redis.
+
+4. **Сбор аналитики**:
+    - Analytics Service:
+        - Подписывается на темы `user_new` и `product_update`, `product_new`.
+        - Анализирует собранные данные и обновляет статистику в базе данных.
+
+## Конфигурация сервисов
+
+### 1. PostgreSQL
+- **Образ**: `postgres:17.0`
+ных для хранения данных пользователей, продуктов, рекомендаций и аналитики.
+- **Настройки**:
+    - База данных: `db`
+    - Пользователь: `user`
+    - Пароль: `password`
+    - Скрипты инициализации: `./init-scripts:/docker-entrypoint-initdb.d`
+    - Порт: `5433` (проброшен на хостовую машину)
+- **Healthcheck**:
+    - Команда проверки: `pg_isready -U rivatent -d mydb`
+    - Интервал: 10 секунд
+    - Таймаут: 5 секунд
+    - Повторы: 5
+
+### 2. Zookeeper
+- **Образ**: `confluentinc/cp-zookeeper:latest`
+- **Описание**: Координатор для Kafka-брокера.
+- **Настройки**:
+    - Порт клиента: `2181`
+    - Tick Time: `2000`
+    - Порт: `22181` (проброшен на хостовую машину)
+- **Healthcheck**:
+    - Команда проверки: `echo "ruok"`
+    - Интервал: 10 секунд
+    - Таймаут: 5 секунд
+    - Повторы: 3
+
+### 3. Kafka
+- **Образ**: `confluentinc/cp-kafka:latest`
+- **Описание**: Брокер сообщений для взаимодействия между микросервисами.
+- **Настройки**:
+    - ID брокера: `1`
+    - Zookeeper: `zookeeper:2181`
+    - Протокол: `PLAINTEXT`
+    - Порты:
+        - `29092` (проброшен на хостовую машину)
+    - Репликация топиков: `1`
+- **Healthcheck**:
+    - Команда проверки: `kafka-topics --bootstrap-server kafka:29092 --list | grep -q 'user_new'`
+    - Интервал: 30 секунд
+    - Таймаут: 10 секунд
+    - Повторы: 3
+- **Команда инициализации**:
+    - Создание топиков:
+        - `product_update`
+        - `product_new`
+        - `user_update`
+        - `user_new`
+
+
+### 4. Kafka UI
+- **Образ**: `provectuslabs/kafka-ui`
+- **Описание**: Графический интерфейс для мониторинга Kafka.
+- **Настройки**:
+    - Кластеры:
+        - Имя: `local`
+        - Серверы: `kafka:29092`
+        - Zookeeper: `zookeeper:2181`
+    - Порт: `8090` (проброшен на хостовую машину)
+- **Рестарт**: Автоматический при сбоях.
+
+### 5. Redis
+- **Образ**: `redis:latest`
+- **Описание**: Кэш для повышения производительности.
+- **Настройки**:
+    - Порт: `6379` (проброшен на хостовую машину)
+- **Healthcheck**:
+    - Команда проверки: `redis-cli ping`
+    - Интервал: 5 секунд
+    - Таймаут: 5 секунд
+    - Повторы: 5
+
+
+### 6. User Service
+- **Описание**: Микросервис для управления пользователями.
+- **Сборка**:
+    - Путь к контексту: `./user-service`
+    - Dockerfile: `Dockerfile`
+- **Настройки**:
+    - Порт: `8081` (проброшен на хостовую машину)
+    - Файл окружения: `./user-service/.env`
+- **Зависимости**:
+    - PostgreSQL
+    - Kafka
+    - Zookeeper
+    - Redis
+    - Prometheus
+    - Проверяется состояние через `healthcheck`.
+
+
+### 7. Product Service
+- **Описание**: Микросервис для управления продуктами.
+- **Сборка**:
+    - Путь к контексту: `./product-service`
+    - Dockerfile: `Dockerfile`
+- **Настройки**:
+    - Порт: `8082` (проброшен на хостовую машину)
+    - Файл окружения: `./product-service/.env`
+- **Зависимости**:
+    - PostgreSQL
+    - Kafka
+    - Zookeeper
+    - Redis
+    - Prometheus
+    - Проверяется состояние через `healthcheck`.
+
+
+
+### 8. Recommendation Service
+- **Описание**: Микросервис для генерации рекомендаций.
+- **Сборка**:
+    - Путь к контексту: `./recommendation-service`
+    - Dockerfile: `Dockerfile`
+- **Настройки**:
+    - Порт: `8083` (проброшен на хостовую машину)
+    - Файл окружения: `./recommendation-service/.env`
+- **Зависимости**:
+    - PostgreSQL
+    - Kafka
+    - Zookeeper
+    - Redis
+    - Prometheus
+    - Проверяется состояние через `healthcheck`.
+
+
+### 9. Analytics Service
+- **Описание**: Микросервис для сбора аналитики.
+- **Сборка**:
+    - Путь к контексту: `./analytics-service`
+    - Dockerfile: `Dockerfile`
+- **Настройки**:
+    - Порт: `8084` (проброшен на хостовую машину)
+    - Файл окружения: `./analytics-service/.env`
+- **Зависимости**:
+    - PostgreSQL
+    - Kafka
+    - Zookeeper
+    - Redis
+    - Prometheus
+    - Проверяется состояние через `healthcheck`.
+
+### 10. Prometheus
+- **Образ**: `prom/prometheus:latest`
+- **Описание**: Система мониторинга.
+- **Настройки**:
+    - Порт: `9090` (проброшен на хостовую машину)
+    - Хранилище данных: - `./prometheus:/prometheus`
+- **Конфигурация**:
+    - Интервал сбора метрик: 5с
+    - Сбор метрик: со всех микросервисов
+- **Healthcheck**:
+    - Команда проверки: `["CMD", "wget", "--spider", "http://localhost:9090/-/healthy"]`
+    - Интервал: 10 секунд
+    - Таймаут: 5 секунд
+    - Повторы: 3
 
 <!-- CONTACT -->
-## Contact
+## Контакты
 
 Павел Ральченков - [@paulralchenkov](https://t.me/paulralchenkov) - paulralchenkov@gmail.com
 
-Project Link: [https://github.com/Rivatent/private-go-test-task](https://github.com/Rivatent/private-go-test-task)
-
+<!-- PROJECT LOGO -->
+<br />
+<div align="center">
+  <a href="https://t.me/paulralchenkov">
+    <img src="images/qr.png" alt="Logo" width="150" height="150">
+  </a>
 <p align="right">(<a href="#readme-top">наверх</a>)</p>
 
 
