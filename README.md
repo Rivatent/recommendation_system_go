@@ -1,29 +1,7 @@
-<!-- Improved compatibility of наверх link: See: https://github.com/othneildrew/Best-README-Template/pull/73 -->
-<a id="readme-top"></a>
-<!--
-*** Thanks for checking out the Best-README-Template. If you have a suggestion
-*** that would make this better, please fork the repo and create a pull request
-*** or simply open an issue with the tag "enhancement".
-*** Don't forget to give the project a star!
-*** Thanks again! Now go create something AMAZING! :D
--->
-
-
-
-<!-- PROJECT SHIELDS -->
-<!--
-*** I'm using markdown "reference style" links for readability.
-*** Reference links are enclosed in brackets [ ] instead of parentheses ( ).
-*** See the bottom of this document for the declaration of the reference variables
-*** for contributors-url, forks-url, etc. This is an optional, concise syntax you may use.
-*** https://www.markdownguide.org/basic-syntax/#reference-style-links
--->
-
 
 <!-- PROJECT LOGO -->
 <br />
 <div align="center">
-  <a href="https://github.com/Rivatent/private-go-test-task">
     <img src="images/gopher3.png" alt="Logo" width="150" height="80">
   </a>
 
@@ -32,10 +10,10 @@
   <p align="center">
     Тестовое задание на позицию Go-разработчика стажера
     <br />
-  <a href="https://github.com/Rivatent/private-go-test-task/openapi.yaml"><strong>Документация по проекту »</strong></a>
+    <a href="openapi.yaml"><strong>Документация по проекту »</strong></a>
     <br />
     <br />
-    <a href="https://github.com/Rivatent/private-go-test-task">Демонстрационное видео</a>
+    <a href="https://VIdeoURL">Демонстрационное видео</a>
   </p>
 </div>
 
@@ -142,7 +120,7 @@ make tests
 ```
 
 ## Документация
-Для подробной информации о API см. [документацию OpenAPI](https://github.com/Rivatent/private-go-test-task/openapi.yaml).
+Для подробной информации о API см. [документацию OpenAPI](openapi.yaml).
 
 ## Архитектура
 ### Общее описание
@@ -391,21 +369,4 @@ make tests
     <img src="images/qr.png" alt="Logo" width="150" height="150">
   </a>
 <p align="right">(<a href="#readme-top">наверх</a>)</p>
-
-
-
-
-<!-- MARKDOWN LINKS & IMAGES -->
-<!-- https://www.markdownguide.org/basic-syntax/#reference-style-links -->
-[contributors-shield]: https://img.shields.io/github/contributors/Rivatent/private-go-test-task.svg?style=for-the-badge
-[contributors-url]: https://github.com/Rivatent/private-go-test-task/graphs/contributors
-[forks-shield]: https://img.shields.io/github/forks/Rivatent/private-go-test-task.svg?style=for-the-badge
-[forks-url]: https://github.com/Rivatent/private-go-test-task/network/members
-[stars-shield]: https://img.shields.io/github/stars/Rivatent/private-go-test-task.svg?style=for-the-badge
-[stars-url]: https://github.com/Rivatent/private-go-test-task/stargazers
-[issues-shield]: https://img.shields.io/github/issues/Rivatent/private-go-test-task.svg?style=for-the-badge
-[issues-url]: https://github.com/Rivatent/private-go-test-task/issues
-[license-shield]: https://img.shields.io/github/license/Rivatent/private-go-test-task.svg?style=for-the-badge
-[license-url]: https://github.com/Rivatent/private-go-test-task/blob/master/LICENSE.txt
-[product-screenshot]: images/usrs.png
-
+</div>
